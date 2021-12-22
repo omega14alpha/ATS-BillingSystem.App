@@ -6,4 +6,11 @@
     <RootNamespace>ATS_BillingSystem.App</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <Folder Include="ATS\" />
+    <Folder Include="BillingSystem\" />
+    <Folder Include="Infrastructure\Constants\" />
+    <Folder Include="EventsArgs\" />
+  </ItemGroup>
+
 </Project>
