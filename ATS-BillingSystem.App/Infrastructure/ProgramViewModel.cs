@@ -54,7 +54,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             {
                 PlanId = 1,
                 TarrifName = _tarrifName,
-                PriceOfOneMinute = 7
+                PriceOfOneMinute = 0.7
             };
 
             IClientManager clientManager = new ClientManager(_station, _portController);
@@ -114,14 +114,14 @@ namespace ATS_BillingSystem.App.Infrastructure
         {
             ICollection<IAbonentsHistory> testCollection = new List<IAbonentsHistory>();
 
-            for (int i = 1; i < 13; i++)
+            for (int month = 1; month < 13; month++)
             {
                 var dayCount = _rand.Next(30);
-                for (int f = 1; f < dayCount; f++)
+                for (int day = 1; day < dayCount; day++)
                 {
                     int randomValue = _rand.Next(86401);
-                    var beginDateTime = new DateTime(2021, i, f).AddSeconds(randomValue);
-                    var endDateTime = new DateTime(2021, i, f).AddSeconds(_rand.Next(randomValue, randomValue + 2000));
+                    var beginDateTime = new DateTime(2021, month, day).AddSeconds(randomValue);
+                    var endDateTime = new DateTime(2021, month, day).AddSeconds(_rand.Next(randomValue, randomValue + 2000));
                     var randomNumber = _abonents[_rand.Next(_abonents.Count)].Contract.PhoneNumber;
                     var tempData = new AbonentsHistory() { BeginCallDateTime = beginDateTime, EndCallDateTime = endDateTime, CalledNumber = randomNumber };
 
@@ -134,7 +134,9 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         public IEnumerable<IAbonentsHistory> GetCurrentAbonentStatistic()
         {
-            return Abonent.GetStatistic(_callStatistics);
+            int month = _rand.Next(DateTime.Now.Month);
+            Func<IAbonentsHistory, bool> func = s => s.BeginCallDateTime.Month == month;
+            return Abonent.GetStatistic(_callStatistics, func);
         }
     }
 }

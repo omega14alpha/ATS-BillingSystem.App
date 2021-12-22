@@ -21,7 +21,7 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         void InitiateStopCall();
 
-        IEnumerable<IAbonentsHistory> GetStatistic(IStatisticsCollector statisticsCollector);
+        IEnumerable<IAbonentsHistory> GetStatistic(IStatisticsCollector statisticsCollector, Func<IAbonentsHistory, bool> func);
 
         void ReceivePhoneSystemMessage(object sender, SystemMessageEventArgs args);
     }

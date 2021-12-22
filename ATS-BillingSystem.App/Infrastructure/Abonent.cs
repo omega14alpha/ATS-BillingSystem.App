@@ -67,14 +67,14 @@ namespace ATS_BillingSystem.App.Infrastructure
             _phone.StopCall();
         }
 
-        public IEnumerable<IAbonentsHistory> GetStatistic(IStatisticsCollector statisticsCollector)
+        public IEnumerable<IAbonentsHistory> GetStatistic(IStatisticsCollector statisticsCollector, Func<IAbonentsHistory, bool> func)
         {
             if (statisticsCollector is null)
             {
                 throw new ArgumentNullException($"Parameter {nameof(statisticsCollector)} cannot be equals null!");
             }
 
-            return statisticsCollector.GetAbonentStatistic(_contract.AbonentId);
+            return statisticsCollector.GetAbonentStatistic(_contract.AbonentId, func);
         }
 
         public void ReceivePhoneSystemMessage(object sender, SystemMessageEventArgs args)

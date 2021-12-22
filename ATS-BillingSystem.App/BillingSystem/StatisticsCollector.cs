@@ -67,14 +67,19 @@ namespace ATS_BillingSystem.App.BillingSystem
             }
         }
 
-        public IEnumerable<IAbonentsHistory> GetAbonentStatistic(IAbonenId abonentId)
+        public IEnumerable<IAbonentsHistory> GetAbonentStatistic(IAbonenId abonentId, Func<IAbonentsHistory, bool> func)
         {
             if (abonentId == null)
             {
                 throw new ArgumentNullException(nameof(abonentId), "Parameter 'abonentId' cannot be equals null!");
             }
 
-            var callsInfo = _abonents.Where(s => s.Key.Id == abonentId.Id).Select(s => s.Value).FirstOrDefault();
+            var callsInfo = _abonents
+                .Where(s => s.Key.Id == abonentId.Id)
+                .Select(s => s.Value)
+                .FirstOrDefault()
+                .Where(func);
+
             return callsInfo;
         }
     }
