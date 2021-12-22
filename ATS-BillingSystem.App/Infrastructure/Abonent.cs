@@ -25,31 +25,31 @@ namespace ATS_BillingSystem.App.Infrastructure
             _contract = contract;
             _phone = phone;
             _port = port;
-            _phone.OnSendTerminalSystemMessage += ReceiveTerminalSystemMessage;
+            _phone.OnSendPhoneSystemMessage += ReceivePhoneSystemMessage;
         }
 
         public void ConnectToPort()
         {
+            _port.OnSendPortSystemMessage += _phone.ReceivingIncomingMessagesFromPort;
             _port.OnPortStartIncomingCall += _phone.AcceptIncomingCallFromPort;
             _port.OnPortStopIncomingCall += _phone.AcceptIncomingEndCallFromPort;
-            _port.OnSendPortSystemMessage += _phone.ReceivingIncomingMessagesFromPort;
-            _phone.OnTerminalStartCall += _port.PortStartCall;
-            _phone.OnTerminalStopCall += _port.PortStopCall;
+            _phone.OnPhoneStartCall += _port.PortStartCall;
+            _phone.OnPhoneStopCall += _port.PortStopCall;
             _phone.OnConnectToPort += _port.ConnectTerminalToPort;
+            _phone.OnDisconnectFromPort += _port.DisconnectTerminalFromPort;
             _phone.ConnectToPort();
-            _phone.OnConnectToPort -= _port.ConnectTerminalToPort;
         }
 
         public void DisconectFromPort()
         {
-            _phone.OnDisconnectFromPort += _port.DisconnectTerminalFromPort;
             _phone.DisconnectFromPort();
-            _phone.OnTerminalStartCall -= _port.PortStartCall;
-            _phone.OnTerminalStopCall -= _port.PortStopCall;
+            _phone.OnConnectToPort -= _port.ConnectTerminalToPort;
+            _phone.OnPhoneStartCall -= _port.PortStartCall;
+            _phone.OnPhoneStopCall -= _port.PortStopCall;
             _phone.OnDisconnectFromPort -= _port.DisconnectTerminalFromPort;
-            _port.OnSendPortSystemMessage -= _phone.ReceivingIncomingMessagesFromPort;
             _port.OnPortStartIncomingCall -= _phone.AcceptIncomingCallFromPort;
             _port.OnPortStopIncomingCall -= _phone.AcceptIncomingEndCallFromPort;
+            _port.OnSendPortSystemMessage -= _phone.ReceivingIncomingMessagesFromPort;
         }
 
         public void InitiateStartCall(IPhoneNumber calledNumber)
@@ -77,7 +77,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             return statisticsCollector.GetAbonentStatistic(_contract.AbonentId);
         }
 
-        public void ReceiveTerminalSystemMessage(object sender, SystemMessageEventArgs args)
+        public void ReceivePhoneSystemMessage(object sender, SystemMessageEventArgs args)
         {
             args.Message = string.Format($" {_contract.PhoneNumber.Number} ) {args.Message}");
             InvokeSystemMessage(this, args);

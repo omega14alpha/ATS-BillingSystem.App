@@ -23,6 +23,6 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         IEnumerable<IAbonentsHistory> GetStatistic(IStatisticsCollector statisticsCollector);
 
-        void ReceiveTerminalSystemMessage(object sender, SystemMessageEventArgs args);
+        void ReceivePhoneSystemMessage(object sender, SystemMessageEventArgs args);
     }
 }

@@ -13,11 +13,11 @@ namespace ATS_BillingSystem.App.ATS
 
         public event EventHandler<EventArgs> OnDisconnectFromPort;
 
-        public event EventHandler<CallDataEventArgs> OnTerminalStartCall;
+        public event EventHandler<CallDataEventArgs> OnPhoneStartCall;
 
-        public event EventHandler<CallDataEventArgs> OnTerminalStopCall;
+        public event EventHandler<CallDataEventArgs> OnPhoneStopCall;
 
-        public event EventHandler<SystemMessageEventArgs> OnSendTerminalSystemMessage;
+        public event EventHandler<SystemMessageEventArgs> OnSendPhoneSystemMessage;
 
         public void ConnectToPort()
         {
@@ -39,8 +39,8 @@ namespace ATS_BillingSystem.App.ATS
             _calledNumber = calledNumber;
             var args = new CallDataEventArgs() { CalledNumber = calledNumber };
             string message = string.Format(TextData.InitiateCall, _calledNumber.Number);
-            SendTerminalSystemMessage(message);
-            InvokeTerminalStartCall(this, args);
+            SendPhoneSystemMessage(message);
+            InvokePhoneStartCall(this, args);
         }
 
         public void StopCall()
@@ -50,41 +50,41 @@ namespace ATS_BillingSystem.App.ATS
                 var args = new CallDataEventArgs() { CalledNumber = _calledNumber };
                 string message = string.Format(TextData.StopCall, _calledNumber.Number);
                 _calledNumber = null;
-                SendTerminalSystemMessage(message);
-                InvokeTerminalStopCall(this, args);
+                SendPhoneSystemMessage(message);
+                InvokePhoneStopCall(this, args);
             }
             else
             {
-                SendTerminalSystemMessage(TextData.NoConnectionsAtTheMoment);
+                SendPhoneSystemMessage(TextData.NoConnectionsAtTheMoment);
             }
         }
 
         public void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args)
         {
             string message = string.Format(TextData.CommunacationBegin, args.SourceNumber.Number);
-            SendTerminalSystemMessage(message);
+            SendPhoneSystemMessage(message);
         }
 
         public void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args)
         {
             string message = string.Format(TextData.CommunicationInterrupted, args.SourceNumber.Number);
-            SendTerminalSystemMessage(message);
+            SendPhoneSystemMessage(message);
         }
 
         public void ReceivingIncomingMessagesFromPort(object sender, SystemMessageEventArgs args)
         {
-            InvokeSendTerminalSystemMessage(this, args);
+            InvokeSendPhoneSystemMessage(this, args);
         }
 
-        private void SendTerminalSystemMessage(string message)
+        private void SendPhoneSystemMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
             {
-                throw new ArgumentException(nameof(message), "Paremeter 'message' cannot be empty or equals null!");
+                throw new ArgumentException("Paremeter 'message' cannot be empty or equals null!", nameof(message));
             }
 
             var args = new SystemMessageEventArgs() { Message = message };
-            InvokeSendTerminalSystemMessage(this, args);
+            InvokeSendPhoneSystemMessage(this, args);
         }
 
         private void InvokeConnectToPort(object sender, EventArgs args)
@@ -97,40 +97,41 @@ namespace ATS_BillingSystem.App.ATS
             if (OnDisconnectFromPort != null)
             {
                 OnDisconnectFromPort.Invoke(sender, args);
+                SendPhoneSystemMessage(TextData.PhoneHasBeenDisconnected);
             }
             else
             {
-                SendTerminalSystemMessage(TextData.TerminalAlreadyDisconnected);
+                SendPhoneSystemMessage(TextData.PhoneAlreadyDisconnected);
             }
         }
 
-        private void InvokeTerminalStartCall(object sender, CallDataEventArgs args)
+        private void InvokePhoneStartCall(object sender, CallDataEventArgs args)
         {
-            if (OnTerminalStartCall != null)
+            if (OnPhoneStartCall != null)
             {
-                OnTerminalStartCall.Invoke(sender, args);
+                OnPhoneStartCall.Invoke(sender, args);
             }
             else
             {
-                SendTerminalSystemMessage(TextData.TerminalDisconnected);
+                SendPhoneSystemMessage(TextData.PhoneDisconnected);
             }
         }
 
-        private void InvokeTerminalStopCall(object sender, CallDataEventArgs args)
+        private void InvokePhoneStopCall(object sender, CallDataEventArgs args)
         {
-            if (OnTerminalStopCall != null)
+            if (OnPhoneStopCall != null)
             {
-                OnTerminalStopCall.Invoke(sender, args);
+                OnPhoneStopCall.Invoke(sender, args);
             }
             else
             {
-                SendTerminalSystemMessage(TextData.TerminalDisconnected);
+                SendPhoneSystemMessage(TextData.PhoneDisconnected);
             }
         }
 
-        private void InvokeSendTerminalSystemMessage(object sender, SystemMessageEventArgs args)
+        private void InvokeSendPhoneSystemMessage(object sender, SystemMessageEventArgs args)
         {
-            OnSendTerminalSystemMessage?.Invoke(sender, args);
+            OnSendPhoneSystemMessage?.Invoke(sender, args);
         }
     }
 }

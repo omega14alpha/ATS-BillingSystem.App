@@ -12,15 +12,15 @@
 
         public static readonly string CommunacationBegin = "Communication with number {0} has begun.";
 
-        public static readonly string CommunicationInterrupted = "Communication with number {0} has been interrupted";
+        public static readonly string CommunicationInterrupted = "Communication with number {0} has been interrupted.";
 
-        public static readonly string TerminalAlreadyDisconnected = "The terminal is already disconnected from the port.";
+        public static readonly string PhoneAlreadyDisconnected = "The phone is already disconnected from the port.";
 
-        public static readonly string TerminalDisconnected = "The terminal is disconnected from the port.";
+        public static readonly string PhoneDisconnected = "The phone is disconnected from the port.";
 
-        public static readonly string TerminalHasBeenConnected = "A terminal has been connected to the port.";
+        public static readonly string PhoneHasBeenConnected = "A phone has been connected to the port.";
 
-        public static readonly string TerminalHasBeenDisconnected = "A terminal has been disconnected from the port.";
+        public static readonly string PhoneHasBeenDisconnected = "A phone has been disconnected from the port.";
 
         public static readonly string PortCurrentlyBusy = "The port is currently busy!";
 

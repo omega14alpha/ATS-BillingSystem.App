@@ -21,6 +21,8 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         void TestAbonentConnectToPort();
 
+        void TestAbonentDisconnectFromPort();
+
         void DisconnectFromPort();
 
         void ChoiseRandomAbonent();

@@ -74,7 +74,7 @@ namespace ATS_BillingSystem.App.BillingSystem
                 throw new ArgumentNullException(nameof(abonentId), "Parameter 'abonentId' cannot be equals null!");
             }
 
-            var callsInfo = _abonents.FirstOrDefault(s => s.Key.Id == abonentId.Id).Value;
+            var callsInfo = _abonents.Where(s => s.Key.Id == abonentId.Id).Select(s => s.Value).FirstOrDefault();
             return callsInfo;
         }
     }

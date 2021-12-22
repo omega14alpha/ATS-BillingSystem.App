@@ -112,6 +112,7 @@ namespace ATS_BillingSystem.App
             Call();
             EndCall();
             Disconnect();
+            TestAbonentDisconnect();
             FillTestData();
             GetStatistic();
         }
@@ -134,6 +135,11 @@ namespace ATS_BillingSystem.App
         private static void TestAbonentConnect()
         {
             _viewModel.TestAbonentConnectToPort();
+        }
+
+        private static void TestAbonentDisconnect()
+        {
+            _viewModel.TestAbonentDisconnectFromPort();
         }
 
         private static void Disconnect()

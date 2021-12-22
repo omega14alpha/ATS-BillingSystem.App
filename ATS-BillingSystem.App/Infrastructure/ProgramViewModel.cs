@@ -90,6 +90,11 @@ namespace ATS_BillingSystem.App.Infrastructure
             _calledTestAbonent.ConnectToPort();
         }
 
+        public void TestAbonentDisconnectFromPort()
+        {
+            _calledTestAbonent.DisconectFromPort();
+        }
+
         public void DisconnectFromPort()
         {
             _abonent.DisconectFromPort();

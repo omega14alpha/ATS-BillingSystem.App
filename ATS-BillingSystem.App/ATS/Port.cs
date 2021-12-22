@@ -52,13 +52,12 @@ namespace ATS_BillingSystem.App.ATS
         public void ConnectTerminalToPort(object sender, EventArgs args)
         {
             _state = PortState.Connect | PortState.Free;
-            SendPortSystemMessage(TextData.TerminalHasBeenConnected);
+            SendPortSystemMessage(TextData.PhoneHasBeenConnected);
         }
 
         public void DisconnectTerminalFromPort(object sender, EventArgs args)
         {
             _state = PortState.Disconnect;
-            SendPortSystemMessage(TextData.TerminalHasBeenDisconnected);
         }
 
         public void PortStartCall(object sender, CallDataEventArgs args)

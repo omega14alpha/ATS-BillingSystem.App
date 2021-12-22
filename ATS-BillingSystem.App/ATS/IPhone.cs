@@ -9,10 +9,10 @@ namespace ATS_BillingSystem.App.ATS
 
         event EventHandler<EventArgs> OnDisconnectFromPort;
 
-        event EventHandler<CallDataEventArgs> OnTerminalStartCall;
+        event EventHandler<CallDataEventArgs> OnPhoneStartCall;
 
-        event EventHandler<CallDataEventArgs> OnTerminalStopCall;
+        event EventHandler<CallDataEventArgs> OnPhoneStopCall;
 
-        event EventHandler<SystemMessageEventArgs> OnSendTerminalSystemMessage;
+        event EventHandler<SystemMessageEventArgs> OnSendPhoneSystemMessage;
     }
 }
