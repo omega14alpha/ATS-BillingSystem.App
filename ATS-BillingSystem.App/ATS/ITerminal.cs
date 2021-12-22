@@ -9,7 +9,7 @@ namespace ATS_BillingSystem.App.ATS
 
         void DisconnectFromPort();
 
-        void StartCall(IPhoneNumber targetNumber);
+        void StartCall(IPhoneNumber calledNumber);
 
         void StopCall();
 
