@@ -45,10 +45,18 @@ namespace ATS_BillingSystem.App.ATS
 
         public void StopCall()
         {
-            var args = new CallDataEventArgs() { CalledNumber = _calledNumber };
-            string message = string.Format(TextData.StopCall, _calledNumber.Number);
-            SendTerminalSystemMessage(message);
-            InvokeTerminalStopCall(this, args);
+            if (_calledNumber != null)
+            {
+                var args = new CallDataEventArgs() { CalledNumber = _calledNumber };
+                string message = string.Format(TextData.StopCall, _calledNumber.Number);
+                _calledNumber = null;
+                SendTerminalSystemMessage(message);
+                InvokeTerminalStopCall(this, args);
+            }
+            else
+            {
+                SendTerminalSystemMessage(TextData.NoConnectionsAtTheMoment);
+            }
         }
 
         public void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args)

@@ -47,7 +47,7 @@ namespace ATS_BillingSystem.App.BillingSystem
             {
                 var newRecord = new AbonentsHistory()
                 {
-                    TargetNumber = args.TargetNumber,
+                    CalledNumber = args.CalledNumber,
                     BeginCallDateTime = args.DateTime
                 };
 

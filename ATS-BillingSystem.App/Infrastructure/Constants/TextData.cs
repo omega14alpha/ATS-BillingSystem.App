@@ -25,5 +25,7 @@
         public static readonly string PortCurrentlyBusy = "The port is currently busy!";
 
         public static readonly string PortNowFree = "The port is now free!";
+
+        public static readonly string NoConnectionsAtTheMoment = "There are no connections at the moment.";
     }
 }

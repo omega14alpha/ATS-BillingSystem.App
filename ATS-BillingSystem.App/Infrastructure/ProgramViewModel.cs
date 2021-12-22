@@ -118,7 +118,7 @@ namespace ATS_BillingSystem.App.Infrastructure
                     var beginDateTime = new DateTime(2021, i, f).AddSeconds(randomValue);
                     var endDateTime = new DateTime(2021, i, f).AddSeconds(_rand.Next(randomValue, randomValue + 2000));
                     var randomNumber = _abonents[_rand.Next(_abonents.Count)].Contract.PhoneNumber;
-                    var tempData = new AbonentsHistory() { BeginCallDateTime = beginDateTime, EndCallDateTime = endDateTime, TargetNumber = randomNumber };
+                    var tempData = new AbonentsHistory() { BeginCallDateTime = beginDateTime, EndCallDateTime = endDateTime, CalledNumber = randomNumber };
 
                     testCollection.Add(tempData);
                 }

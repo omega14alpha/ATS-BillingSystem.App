@@ -5,7 +5,7 @@ namespace ATS_BillingSystem.App.Models.Systems
 {
     internal class AbonentsHistory : IAbonentsHistory
     {
-        public IPhoneNumber TargetNumber { get; set; }
+        public IPhoneNumber CalledNumber { get; set; }
 
         public DateTime BeginCallDateTime { get; set; }
 
