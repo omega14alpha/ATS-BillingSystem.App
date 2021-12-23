@@ -1,5 +1,6 @@
 ﻿using ATS_BillingSystem.App.ATS;
 using ATS_BillingSystem.App.BillingSystem;
+using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Models.Abonents;
 using ATS_BillingSystem.App.Models.Systems;
 using System;
@@ -28,6 +29,8 @@ namespace ATS_BillingSystem.App.Infrastructure
         private readonly string[] _surnames = new[] { "Jonson", "Calipso", "Adams", "Swift", "Simpson", "Yan", "Star", };
 
         private readonly string _tarrifName = "Light";
+
+        public event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
 
         public IEnumerable<IAbonent> AbonentsCollection => _abonents;
 
@@ -73,11 +76,13 @@ namespace ATS_BillingSystem.App.Infrastructure
         {
             _abonent = _abonents[_rand.Next(0, _abonents.Count)];
             _abonents.Remove(_abonent);
+            _abonent.OnSendAbonentSystemMessage += InvokeSystemMessage;
         }
 
         public void ChoiseRandomTargetTestAbonent()
         {
             _calledTestAbonent = _abonents[_rand.Next(0, _abonents.Count)];
+            _calledTestAbonent.OnSendAbonentSystemMessage += InvokeSystemMessage;
         }
 
         public void ConnectToPort()
@@ -137,6 +142,11 @@ namespace ATS_BillingSystem.App.Infrastructure
             int month = _rand.Next(DateTime.Now.Month);
             Func<IAbonentsHistory, bool> func = s => s.BeginCallDateTime.Month == month;
             return Abonent.GetStatistic(_callStatistics, func);
+        }
+
+        private void InvokeSystemMessage(object sender, SystemMessageEventArgs args)
+        {
+            OnSendSystemMessage?.Invoke(sender, args);
         }
     }
 }

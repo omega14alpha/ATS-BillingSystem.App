@@ -9,7 +9,7 @@ namespace ATS_BillingSystem.App.Infrastructure
 {
     internal interface IAbonent
     {
-        event EventHandler<SystemMessageEventArgs> OnSystemMessage;
+        event EventHandler<SystemMessageEventArgs> OnSendAbonentSystemMessage;
 
         IContract Contract { get; }
 

@@ -12,14 +12,13 @@ namespace ATS_BillingSystem.App
         static void Main(string[] args)
         {
             Init();
-            _viewModel.Abonent.OnSystemMessage += ShowReceivedMessage;
-            _viewModel.CalledTestAbonent.OnSystemMessage += ShowReceivedMessage;
             WorkMenu();
         }
 
         private static void Init()
         {
             _viewModel = new ProgramViewModel();
+            _viewModel.OnSendSystemMessage += ShowReceivedMessage;
             _viewModel.CreateTestAbonentsCollection(6);
             _viewModel.ChoiseRandomAbonent();
             _viewModel.ChoiseRandomTargetTestAbonent();

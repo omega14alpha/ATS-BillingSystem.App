@@ -16,7 +16,7 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         private IPort _port;
 
-        public event EventHandler<SystemMessageEventArgs> OnSystemMessage;
+        public event EventHandler<SystemMessageEventArgs> OnSendAbonentSystemMessage;
 
         public IContract Contract => _contract;
 
@@ -85,7 +85,7 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         private void InvokeSystemMessage(object sender, SystemMessageEventArgs args)
         {
-            OnSystemMessage?.Invoke(sender, args);
+            OnSendAbonentSystemMessage?.Invoke(sender, args);
         }
     }
 }
