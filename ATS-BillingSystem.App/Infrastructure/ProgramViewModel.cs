@@ -32,11 +32,11 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         public event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
 
-        public IEnumerable<IAbonent> AbonentsCollection => _abonents;
+        public IEnumerable<ISubscriber> AbonentsCollection => _abonents;
 
-        public IAbonent Abonent => _abonent;
+        public ISubscriber Abonent => _abonent;
 
-        public IAbonent CalledTestAbonent => _calledTestAbonent;
+        public ISubscriber CalledTestAbonent => _calledTestAbonent;
 
         public ProgramViewModel()
         {

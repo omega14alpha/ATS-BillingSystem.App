@@ -9,11 +9,11 @@ namespace ATS_BillingSystem.App.Infrastructure
     {
         event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
 
-        IEnumerable<IAbonent> AbonentsCollection { get; }
-        
-        IAbonent Abonent { get; }
+        IEnumerable<ISubscriber> AbonentsCollection { get; }
 
-        IAbonent CalledTestAbonent { get; }
+        ISubscriber Abonent { get; }
+
+        ISubscriber CalledTestAbonent { get; }
 
         void CreateTestAbonentsCollection(int testAbonentCount);
 
