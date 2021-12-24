@@ -15,8 +15,6 @@ namespace ATS_BillingSystem.App.ATS
 
         void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args);
 
-        void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args);
-
-        void ReceivingIncomingMessagesFromPort(object sender, SystemMessageEventArgs args);
+        void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args);        
     }
 }

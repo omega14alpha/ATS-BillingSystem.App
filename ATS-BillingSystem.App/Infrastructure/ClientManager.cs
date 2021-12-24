@@ -58,7 +58,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             port.OnPortStateChange += _station.PortStateChanged;
             port.OnPortStartCall += _station.ReceiveIncomingCallFromPort;
             port.OnPortStopCall += _station.ReceiveEndCurrentCallFromPort;
-            _station.OnSendSystemMessage += port.ReceivingIncomingMessagesFromStation;
+            _station.OnSendSystemMessage += port.ReceivingIncomingMessages;
             return port;
         }
     }

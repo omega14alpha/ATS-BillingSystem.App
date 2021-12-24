@@ -17,15 +17,11 @@ namespace ATS_BillingSystem.App.ATS
 
         public event EventHandler<CallDataEventArgs> OnPhoneStopCall;
 
-        public void ConnectToPort()
-        {
-            InvokeConnectToPort(this, EventArgs.Empty);
-        }
+        public void ConnectToPort() =>
+            InvokeConnectToPort(this, EventArgs.Empty);        
 
-        public void DisconnectFromPort()
-        {
-            InvokeDisconnectFromPort(this, EventArgs.Empty);
-        }
+        public void DisconnectFromPort() => 
+            InvokeDisconnectFromPort(this, EventArgs.Empty);        
 
         public void StartCall(IPhoneNumber calledNumber)
         {
@@ -69,15 +65,8 @@ namespace ATS_BillingSystem.App.ATS
             SendSystemMessage(message);
         }
 
-        public void ReceivingIncomingMessagesFromPort(object sender, SystemMessageEventArgs args)
-        {
-            InvokeSendSystemMessage(this, args);
-        }
-
-        private void InvokeConnectToPort(object sender, EventArgs args)
-        {
-            OnConnectToPort?.Invoke(this, args);
-        }
+        private void InvokeConnectToPort(object sender, EventArgs args) =>
+            OnConnectToPort?.Invoke(this, args);        
 
         private void InvokeDisconnectFromPort(object sender, EventArgs args)
         {

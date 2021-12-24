@@ -17,7 +17,5 @@ namespace ATS_BillingSystem.App.ATS
         void PortStartIncomingCall(IPhoneNumber sourceNumber);
 
         void PortStopIncomingCall(IPhoneNumber sourceNumber);
-
-        void ReceivingIncomingMessagesFromStation(object sender, SystemMessageEventArgs args);
     }
 }

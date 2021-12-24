@@ -6,5 +6,7 @@ namespace ATS_BillingSystem.App.ATS
     internal interface IMessager
     {
         event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
+
+        void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args);
     }
 }

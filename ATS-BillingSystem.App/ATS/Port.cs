@@ -53,10 +53,8 @@ namespace ATS_BillingSystem.App.ATS
             SendSystemMessage(TextData.PhoneHasBeenConnected);
         }
 
-        public void DisconnectTerminalFromPort(object sender, EventArgs args)
-        {
-            _state = PortState.Disconnect;
-        }
+        public void DisconnectTerminalFromPort(object sender, EventArgs args) => 
+            _state = PortState.Disconnect;        
 
         public void PortStartCall(object sender, CallDataEventArgs args)
         {
@@ -111,15 +109,8 @@ namespace ATS_BillingSystem.App.ATS
             }
         }
 
-        public void ReceivingIncomingMessagesFromStation(object sender, SystemMessageEventArgs args)
-        {
-            InvokeSendSystemMessage(this, args);
-        }
-
-        private void InvokePortStateChanged(object sender, PortStateEventArgs args)
-        {
-            OnPortStateChange?.Invoke(this, args);
-        }
+        private void InvokePortStateChanged(object sender, PortStateEventArgs args) => 
+            OnPortStateChange?.Invoke(this, args);        
 
         private bool InvokeStartCall(object sender, CallDataEventArgs args)
         {
@@ -127,19 +118,13 @@ namespace ATS_BillingSystem.App.ATS
             return isConnect.Value;
         }
 
-        private void InvokePortStopCall(object sender, CallDataEventArgs args)
-        {
-            OnPortStopCall?.Invoke(sender, args);
-        }
+        private void InvokePortStopCall(object sender, CallDataEventArgs args) => 
+            OnPortStopCall?.Invoke(sender, args);        
 
-        private void InvokePortStartIncomingCall(object sender, CallDataEventArgs args)
-        {
-            OnPortStartIncomingCall?.Invoke(sender, args);
-        }
+        private void InvokePortStartIncomingCall(object sender, CallDataEventArgs args) => 
+            OnPortStartIncomingCall?.Invoke(sender, args);        
 
-        private void InvokePortStopIncomingCall(object sender, CallDataEventArgs args)
-        {
-            OnPortStopIncomingCall?.Invoke(sender, args);
-        }
+        private void InvokePortStopIncomingCall(object sender, CallDataEventArgs args) => 
+            OnPortStopIncomingCall?.Invoke(sender, args);        
     }
 }

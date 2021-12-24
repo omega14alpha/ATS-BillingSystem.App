@@ -113,7 +113,14 @@ namespace ATS_BillingSystem.App.Infrastructure
                 }
             }
 
-            _callStatistics.AddTestAbonentData(_abonent.Contract.AbonentId, testCollection);
+            try
+            {
+                _callStatistics.AddTestAbonentData(_abonent.Contract.AbonentId, testCollection);
+            }
+            catch (Exception ex)
+            {
+                SendSystemMessage(ex.Message);
+            }
         }
 
         public IEnumerable<IAbonentsHistory> GetCurrentAbonentStatistic()

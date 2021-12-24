@@ -7,6 +7,9 @@ namespace ATS_BillingSystem.App.ATS
     {
         public event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
 
+        public virtual void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args) =>
+            InvokeSendSystemMessage(this, args);        
+
         protected virtual void SendSystemMessage(string message)
         {
             if (string.IsNullOrWhiteSpace(message))
@@ -18,9 +21,7 @@ namespace ATS_BillingSystem.App.ATS
             InvokeSendSystemMessage(this, args);
         }
 
-        protected virtual void InvokeSendSystemMessage(object sender, SystemMessageEventArgs args)
-        {
-            OnSendSystemMessage?.Invoke(sender, args);
-        }
+        protected virtual void InvokeSendSystemMessage(object sender, SystemMessageEventArgs args) => 
+            OnSendSystemMessage?.Invoke(sender, args);        
     }
 }

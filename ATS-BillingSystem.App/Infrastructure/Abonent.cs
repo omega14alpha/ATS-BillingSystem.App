@@ -23,12 +23,12 @@ namespace ATS_BillingSystem.App.Infrastructure
             _contract = contract;
             _phone = phone;
             _port = port;
-            _phone.OnSendSystemMessage += ReceivePhoneSystemMessage;
+            _phone.OnSendSystemMessage += ReceivingIncomingMessages;
         }
 
         public void ConnectToPort()
         {
-            _port.OnSendSystemMessage += _phone.ReceivingIncomingMessagesFromPort;
+            _port.OnSendSystemMessage += _phone.ReceivingIncomingMessages;
             _port.OnPortStartIncomingCall += _phone.AcceptIncomingCallFromPort;
             _port.OnPortStopIncomingCall += _phone.AcceptIncomingEndCallFromPort;
             _phone.OnPhoneStartCall += _port.PortStartCall;
@@ -47,7 +47,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             _phone.OnDisconnectFromPort -= _port.DisconnectTerminalFromPort;
             _port.OnPortStartIncomingCall -= _phone.AcceptIncomingCallFromPort;
             _port.OnPortStopIncomingCall -= _phone.AcceptIncomingEndCallFromPort;
-            _port.OnSendSystemMessage -= _phone.ReceivingIncomingMessagesFromPort;
+            _port.OnSendSystemMessage -= _phone.ReceivingIncomingMessages;
         }
 
         public void InitiateStartCall(IPhoneNumber calledNumber)
@@ -75,7 +75,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             return statisticsCollector.GetAbonentStatistic(_contract.AbonentId, func);
         }
 
-        public void ReceivePhoneSystemMessage(object sender, SystemMessageEventArgs args)
+        public override void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args)
         {
             args.Message = string.Format($" {_contract.PhoneNumber.Number} ) {args.Message}");
             InvokeSendSystemMessage(this, args);
