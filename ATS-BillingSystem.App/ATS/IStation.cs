@@ -3,13 +3,11 @@ using System;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal interface IStation
+    internal interface IStation : IMessager
     {
         event EventHandler<HistoryEventArgs> OnRecordingCallStartData;
 
         event EventHandler<HistoryEventArgs> OnRecordingCallEndData;
-
-        event EventHandler<SystemMessageEventArgs> OnSendStationSystemMessage;
 
         bool ReceiveIncomingCallFromPort(object sender, CallDataEventArgs args);
 

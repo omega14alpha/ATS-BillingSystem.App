@@ -3,7 +3,7 @@ using System;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal interface IPhone : ITerminal
+    internal interface IPhone : ITerminal, IMessager
     {
         event EventHandler<EventArgs> OnConnectToPort;
 
@@ -12,7 +12,5 @@ namespace ATS_BillingSystem.App.ATS
         event EventHandler<CallDataEventArgs> OnPhoneStartCall;
 
         event EventHandler<CallDataEventArgs> OnPhoneStopCall;
-
-        event EventHandler<SystemMessageEventArgs> OnSendPhoneSystemMessage;
     }
 }

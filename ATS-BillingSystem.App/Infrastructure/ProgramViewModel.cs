@@ -1,6 +1,5 @@
 ﻿using ATS_BillingSystem.App.ATS;
 using ATS_BillingSystem.App.BillingSystem;
-using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Models.Abonents;
 using ATS_BillingSystem.App.Models.Systems;
 using System;
@@ -8,9 +7,19 @@ using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
-    internal class ProgramViewModel : IViewModel
+    internal class ProgramViewModel : Communicator, IViewModel
     {
+        private readonly string[] _firstnames = new[] { "Bob", "Jecob", "Fred", "Styu", "Sten", "Ann", "Tramp" };
+
+        private readonly string[] _surnames = new[] { "Jonson", "Calipso", "Adams", "Swift", "Simpson", "Yan", "Star", };
+
+        private const string _tarrifName = "Light";
+
         private IStatisticsCollector _callStatistics;
+
+        private PortController _portController;
+
+        private IStation _station;
 
         private IList<IAbonent> _abonents;
 
@@ -19,18 +28,6 @@ namespace ATS_BillingSystem.App.Infrastructure
         private IAbonent _calledTestAbonent;
 
         private Random _rand;
-
-        private PortController _portController;
-
-        private IStation _station;
-
-        private readonly string[] _firstnames = new[] { "Bob", "Jecob", "Fred", "Styu", "Sten", "Ann", "Tramp" };
-
-        private readonly string[] _surnames = new[] { "Jonson", "Calipso", "Adams", "Swift", "Simpson", "Yan", "Star", };
-
-        private readonly string _tarrifName = "Light";
-
-        public event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
 
         public IEnumerable<ISubscriber> AbonentsCollection => _abonents;
 
@@ -41,11 +38,10 @@ namespace ATS_BillingSystem.App.Infrastructure
         public ProgramViewModel()
         {
             _callStatistics = new StatisticsCollector();
-            _abonents = new List<IAbonent>();
-            _rand = new Random();
-
             _portController = new PortController();
-            _station = new Station(_portController);
+           _station = new Station(_portController);
+            _abonents = new List<IAbonent>();
+            _rand = new Random(); 
 
             _station.OnRecordingCallStartData += _callStatistics.SaveNewCallStartData;
             _station.OnRecordingCallEndData += _callStatistics.SaveNewCallEndData;
@@ -76,44 +72,27 @@ namespace ATS_BillingSystem.App.Infrastructure
         {
             _abonent = _abonents[_rand.Next(0, _abonents.Count)];
             _abonents.Remove(_abonent);
-            _abonent.OnSendAbonentSystemMessage += InvokeSystemMessage;
+            _abonent.OnSendSystemMessage += InvokeSendSystemMessage;
         }
 
         public void ChoiseRandomTargetTestAbonent()
         {
             _calledTestAbonent = _abonents[_rand.Next(0, _abonents.Count)];
-            _calledTestAbonent.OnSendAbonentSystemMessage += InvokeSystemMessage;
+            _calledTestAbonent.OnSendSystemMessage += InvokeSendSystemMessage;
         }
 
-        public void ConnectToPort()
-        {
-            _abonent.ConnectToPort();
-        }
+        public void ConnectToPort() => _abonent.ConnectToPort();        
 
-        public void TestAbonentConnectToPort()
-        {
-            _calledTestAbonent.ConnectToPort();
-        }
+        public void TestAbonentConnectToPort() => _calledTestAbonent.ConnectToPort();        
 
-        public void TestAbonentDisconnectFromPort()
-        {
-            _calledTestAbonent.DisconectFromPort();
-        }
+        public void TestAbonentDisconnectFromPort() => _calledTestAbonent.DisconectFromPort();
+        
+        public void DisconnectFromPort() => _abonent.DisconectFromPort();
 
-        public void DisconnectFromPort()
-        {
-            _abonent.DisconectFromPort();
-        }
-
-        public void CallToTestAbonent()
-        {
-            _abonent.InitiateStartCall(_calledTestAbonent.Contract.PhoneNumber);
-        }
-
-        public void StopCurrentCall()
-        {
-            _abonent.InitiateStopCall();
-        }
+        public void CallToTestAbonent() => _abonent.InitiateStartCall(_calledTestAbonent.Contract.PhoneNumber);
+        
+        public void StopCurrentCall() => _abonent.InitiateStopCall();
+        
 
         public void FillTestDataToStatisticHandler()
         {
@@ -141,12 +120,15 @@ namespace ATS_BillingSystem.App.Infrastructure
         {
             int month = _rand.Next(DateTime.Now.Month);
             Func<IAbonentsHistory, bool> func = s => s.BeginCallDateTime.Month == month;
-            return Abonent.GetStatistic(_callStatistics, func);
-        }
-
-        private void InvokeSystemMessage(object sender, SystemMessageEventArgs args)
-        {
-            OnSendSystemMessage?.Invoke(sender, args);
+            try
+            {
+                return Abonent.GetStatistic(_callStatistics, func);
+            }
+            catch (Exception ex)
+            {
+                SendSystemMessage(ex.Message);
+                return null;
+            }
         }
     }
 }

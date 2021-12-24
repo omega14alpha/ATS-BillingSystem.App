@@ -6,7 +6,7 @@ using System;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal class Port : IPort
+    internal class Port : Communicator, IPort
     {
         private IPhoneNumber _number;
 
@@ -40,8 +40,6 @@ namespace ATS_BillingSystem.App.ATS
 
         public event EventHandler<CallDataEventArgs> OnPortStopIncomingCall;
 
-        public event EventHandler<SystemMessageEventArgs> OnSendPortSystemMessage;
-
         public Port(IAbonenId abonentId, IPhoneNumber number)
         {
             _abonentId = abonentId;
@@ -52,7 +50,7 @@ namespace ATS_BillingSystem.App.ATS
         public void ConnectTerminalToPort(object sender, EventArgs args)
         {
             _state = PortState.Connect | PortState.Free;
-            SendPortSystemMessage(TextData.PhoneHasBeenConnected);
+            SendSystemMessage(TextData.PhoneHasBeenConnected);
         }
 
         public void DisconnectTerminalFromPort(object sender, EventArgs args)
@@ -74,7 +72,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendPortSystemMessage(TextData.PortCurrentlyBusy);
+                SendSystemMessage(TextData.PortCurrentlyBusy);
             }
         }
 
@@ -89,7 +87,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendPortSystemMessage(TextData.PortNowFree);
+                SendSystemMessage(TextData.PortNowFree);
             }
         }
 
@@ -115,23 +113,7 @@ namespace ATS_BillingSystem.App.ATS
 
         public void ReceivingIncomingMessagesFromStation(object sender, SystemMessageEventArgs args)
         {
-            InvokeSendPortSystemMessage(this, args);
-        }
-
-        private void SendPortSystemMessage(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ArgumentException(nameof(message), "Paremeter 'message' cannot be empty or equals null!");
-            }
-
-            var args = new SystemMessageEventArgs() { Message = message };
-            InvokeSendPortSystemMessage(this, args);
-        }
-
-        private void InvokeSendPortSystemMessage(object sender, SystemMessageEventArgs args)
-        {
-            OnSendPortSystemMessage?.Invoke(this, args);
+            InvokeSendSystemMessage(this, args);
         }
 
         private void InvokePortStateChanged(object sender, PortStateEventArgs args)

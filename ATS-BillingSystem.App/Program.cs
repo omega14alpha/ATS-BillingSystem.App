@@ -51,7 +51,7 @@ namespace ATS_BillingSystem.App
                         case 2: { Call(); break; }
                         case 3: { EndCall(); break; }
                         case 4: { Connect(); TestAbonentConnect(); break; }
-                        case 5: { Disconnect(); break; }
+                        case 5: { Disconnect(); TestAbonentDisconnect(); break; }
                         case 6: { GetStatistic(); break; }
                         case 7:
                             {
@@ -116,45 +116,24 @@ namespace ATS_BillingSystem.App
             GetStatistic();
         }
 
-        private static void Call()
-        {
-            _viewModel.CallToTestAbonent();
-        }
+        private static void Call() => _viewModel.CallToTestAbonent();        
 
-        private static void EndCall()
-        {
-            _viewModel.StopCurrentCall();
-        }
+        private static void EndCall() => _viewModel.StopCurrentCall();
+        
+        private static void Connect() => _viewModel.ConnectToPort();
+        
+        private static void TestAbonentConnect() => _viewModel.TestAbonentConnectToPort();        
 
-        private static void Connect()
-        {
-            _viewModel.ConnectToPort();
-        }
-
-        private static void TestAbonentConnect()
-        {
-            _viewModel.TestAbonentConnectToPort();
-        }
-
-        private static void TestAbonentDisconnect()
-        {
-            _viewModel.TestAbonentDisconnectFromPort();
-        }
-
-        private static void Disconnect()
-        {
-            _viewModel.DisconnectFromPort();
-        }
-
-        private static void FillTestData()
-        {
-            _viewModel.FillTestDataToStatisticHandler();
-        }
-
+        private static void TestAbonentDisconnect() => _viewModel.TestAbonentDisconnectFromPort();
+        
+        private static void Disconnect() => _viewModel.DisconnectFromPort();
+        
+        private static void FillTestData() => _viewModel.FillTestDataToStatisticHandler();
+        
         private static void GetStatistic()
         {
             var result = _viewModel.GetCurrentAbonentStatistic();
-            if (result.Count() != 0)
+            if (result != null && result.Any())
             {
                 Console.WriteLine("\nYour calls history.");
                 var tariffMinitCoas = _viewModel.Abonent.Contract.TariffPlan.PriceOfOneMinute;
@@ -179,9 +158,7 @@ namespace ATS_BillingSystem.App
             }
         }
 
-        private static void ShowReceivedMessage(object sender, SystemMessageEventArgs e)
-        {
-            Console.WriteLine(e.Message);
-        }
+        private static void ShowReceivedMessage(object sender, SystemMessageEventArgs e) => 
+            Console.WriteLine(e.Message);        
     }
 }

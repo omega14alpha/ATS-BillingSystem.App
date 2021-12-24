@@ -5,7 +5,7 @@ using System;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal interface IPort : IIntermediateDevice
+    internal interface IPort : IIntermediateDevice, IMessager
     {
         IPhoneNumber Number { get; }
 
@@ -20,7 +20,5 @@ namespace ATS_BillingSystem.App.ATS
         event EventHandler<CallDataEventArgs> OnPortStartIncomingCall;
 
         event EventHandler<CallDataEventArgs> OnPortStopIncomingCall;
-
-        event EventHandler<SystemMessageEventArgs> OnSendPortSystemMessage;
     }
 }

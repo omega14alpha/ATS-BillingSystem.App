@@ -5,7 +5,7 @@ using System;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal class Phone : IPhone
+    internal class Phone : Communicator, IPhone
     {
         private IPhoneNumber _calledNumber;
 
@@ -16,8 +16,6 @@ namespace ATS_BillingSystem.App.ATS
         public event EventHandler<CallDataEventArgs> OnPhoneStartCall;
 
         public event EventHandler<CallDataEventArgs> OnPhoneStopCall;
-
-        public event EventHandler<SystemMessageEventArgs> OnSendPhoneSystemMessage;
 
         public void ConnectToPort()
         {
@@ -39,7 +37,7 @@ namespace ATS_BillingSystem.App.ATS
             _calledNumber = calledNumber;
             var args = new CallDataEventArgs() { CalledNumber = calledNumber };
             string message = string.Format(TextData.InitiateCall, _calledNumber.Number);
-            SendPhoneSystemMessage(message);
+            SendSystemMessage(message);
             InvokePhoneStartCall(this, args);
         }
 
@@ -50,41 +48,30 @@ namespace ATS_BillingSystem.App.ATS
                 var args = new CallDataEventArgs() { CalledNumber = _calledNumber };
                 string message = string.Format(TextData.StopCall, _calledNumber.Number);
                 _calledNumber = null;
-                SendPhoneSystemMessage(message);
+                SendSystemMessage(message);
                 InvokePhoneStopCall(this, args);
             }
             else
             {
-                SendPhoneSystemMessage(TextData.NoConnectionsAtTheMoment);
+                SendSystemMessage(TextData.NoConnectionsAtTheMoment);
             }
         }
 
         public void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args)
         {
             string message = string.Format(TextData.CommunacationBegin, args.SourceNumber.Number);
-            SendPhoneSystemMessage(message);
+            SendSystemMessage(message);
         }
 
         public void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args)
         {
             string message = string.Format(TextData.CommunicationInterrupted, args.SourceNumber.Number);
-            SendPhoneSystemMessage(message);
+            SendSystemMessage(message);
         }
 
         public void ReceivingIncomingMessagesFromPort(object sender, SystemMessageEventArgs args)
         {
-            InvokeSendPhoneSystemMessage(this, args);
-        }
-
-        private void SendPhoneSystemMessage(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ArgumentException("Paremeter 'message' cannot be empty or equals null!", nameof(message));
-            }
-
-            var args = new SystemMessageEventArgs() { Message = message };
-            InvokeSendPhoneSystemMessage(this, args);
+            InvokeSendSystemMessage(this, args);
         }
 
         private void InvokeConnectToPort(object sender, EventArgs args)
@@ -97,11 +84,11 @@ namespace ATS_BillingSystem.App.ATS
             if (OnDisconnectFromPort != null)
             {
                 OnDisconnectFromPort.Invoke(sender, args);
-                SendPhoneSystemMessage(TextData.PhoneHasBeenDisconnected);
+                SendSystemMessage(TextData.PhoneHasBeenDisconnected);
             }
             else
             {
-                SendPhoneSystemMessage(TextData.PhoneAlreadyDisconnected);
+                SendSystemMessage(TextData.PhoneAlreadyDisconnected);
             }
         }
 
@@ -113,7 +100,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendPhoneSystemMessage(TextData.PhoneDisconnected);
+                SendSystemMessage(TextData.PhoneDisconnected);
             }
         }
 
@@ -125,13 +112,8 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendPhoneSystemMessage(TextData.PhoneDisconnected);
+                SendSystemMessage(TextData.PhoneDisconnected);
             }
-        }
-
-        private void InvokeSendPhoneSystemMessage(object sender, SystemMessageEventArgs args)
-        {
-            OnSendPhoneSystemMessage?.Invoke(sender, args);
         }
     }
 }

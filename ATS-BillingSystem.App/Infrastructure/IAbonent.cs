@@ -1,13 +1,11 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
+﻿using ATS_BillingSystem.App.ATS;
+using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Models.Abonents;
-using System;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
-    internal interface IAbonent : ISubscriber
+    internal interface IAbonent : ISubscriber, IMessager
     {
-        event EventHandler<SystemMessageEventArgs> OnSendAbonentSystemMessage;
-
         void ConnectToPort();
 
         void DisconectFromPort();

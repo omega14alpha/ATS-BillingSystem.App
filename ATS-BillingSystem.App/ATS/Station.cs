@@ -7,15 +7,13 @@ using System.Linq;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal class Station : IStation
+    internal class Station : Communicator, IStation
     {
         private IPortController _port;
 
         public event EventHandler<HistoryEventArgs> OnRecordingCallStartData;
 
         public event EventHandler<HistoryEventArgs> OnRecordingCallEndData;
-
-        public event EventHandler<SystemMessageEventArgs> OnSendStationSystemMessage;
 
         public Station(IPortController ports)
         {
@@ -27,13 +25,14 @@ namespace ATS_BillingSystem.App.ATS
             IPort targetPort = _port.Ports.Where(x => x.Number == args.CalledNumber).FirstOrDefault();
             if (targetPort != null)
             {
+                string message = string.Empty;
                 if ((targetPort.State & PortState.Busy) != 0)
                 {
-                    SendStationSystemMessage(TextData.TargetPhoneBusy);
+                    message = TextData.TargetPhoneBusy;
                 }
                 else if (targetPort.State == PortState.Disconnect)
                 {
-                    SendStationSystemMessage(TextData.TargetPhoneDisconected);
+                    message = TextData.TargetPhoneDisconected;
                 }
                 else
                 {
@@ -41,12 +40,14 @@ namespace ATS_BillingSystem.App.ATS
                     RecordingCallStartData(args.AbonentId, args.CalledNumber);
                     return true;
                 }
+
+                SendSystemMessage(message);
             }
 
             return false;
         }
 
-        public void ReceiveEndCurrentCallFromPort(object sender, CallDataEventArgs  args)
+        public void ReceiveEndCurrentCallFromPort(object sender, CallDataEventArgs args)
         {
             IPort targetPort = _port.Ports.FirstOrDefault(x => x.Number == args.CalledNumber);
             if (targetPort != null)
@@ -61,11 +62,7 @@ namespace ATS_BillingSystem.App.ATS
 
         public void PortStateChanged(object sender, PortStateEventArgs args)
         {
-            if ((args.NewState & PortState.Disconnect) != 0)
-            {
-                var port = sender as IPort;
-
-            }
+            // Не решил какая должна быть реакция!!!
         }
 
         private void RecordingCallStartData(IAbonenId abonentId, IPhoneNumber calledNumber)
@@ -106,17 +103,6 @@ namespace ATS_BillingSystem.App.ATS
             InvokeOnRecordingCallEndData(this, args);
         }
 
-        private void SendStationSystemMessage(string message)
-        {
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ArgumentException(nameof(message), "Paremeter 'message' cannot be empty or equals null!");
-            }
-
-            var args = new SystemMessageEventArgs() { Message = message };
-            InvokeSendStationSystemMessage(this, args);
-        }
-
         private void InvokeRecordingCallStartData(object sender, HistoryEventArgs args)
         {
             OnRecordingCallStartData?.Invoke(sender, args);
@@ -125,11 +111,6 @@ namespace ATS_BillingSystem.App.ATS
         private void InvokeOnRecordingCallEndData(object sender, HistoryEventArgs args)
         {
             OnRecordingCallEndData?.Invoke(sender, args);
-        }
-
-        private void InvokeSendStationSystemMessage(object sender, SystemMessageEventArgs args)
-        {
-            OnSendStationSystemMessage?.Invoke(sender, args);
         }
     }
 }

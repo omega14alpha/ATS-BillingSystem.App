@@ -1,14 +1,11 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
+﻿using ATS_BillingSystem.App.ATS;
 using ATS_BillingSystem.App.Models.Systems;
-using System;
 using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
-    internal interface IViewModel
+    internal interface IViewModel : IMessager
     {
-        event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
-
         IEnumerable<ISubscriber> AbonentsCollection { get; }
 
         ISubscriber Abonent { get; }

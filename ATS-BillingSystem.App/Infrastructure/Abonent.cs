@@ -8,15 +8,13 @@ using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
-    internal class Abonent : IAbonent
+    internal class Abonent : Communicator, IMessager, IAbonent
     {
         private IContract _contract;
 
         private IPhone _phone;
 
         private IPort _port;
-
-        public event EventHandler<SystemMessageEventArgs> OnSendAbonentSystemMessage;
 
         public IContract Contract => _contract;
 
@@ -25,12 +23,12 @@ namespace ATS_BillingSystem.App.Infrastructure
             _contract = contract;
             _phone = phone;
             _port = port;
-            _phone.OnSendPhoneSystemMessage += ReceivePhoneSystemMessage;
+            _phone.OnSendSystemMessage += ReceivePhoneSystemMessage;
         }
 
         public void ConnectToPort()
         {
-            _port.OnSendPortSystemMessage += _phone.ReceivingIncomingMessagesFromPort;
+            _port.OnSendSystemMessage += _phone.ReceivingIncomingMessagesFromPort;
             _port.OnPortStartIncomingCall += _phone.AcceptIncomingCallFromPort;
             _port.OnPortStopIncomingCall += _phone.AcceptIncomingEndCallFromPort;
             _phone.OnPhoneStartCall += _port.PortStartCall;
@@ -49,7 +47,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             _phone.OnDisconnectFromPort -= _port.DisconnectTerminalFromPort;
             _port.OnPortStartIncomingCall -= _phone.AcceptIncomingCallFromPort;
             _port.OnPortStopIncomingCall -= _phone.AcceptIncomingEndCallFromPort;
-            _port.OnSendPortSystemMessage -= _phone.ReceivingIncomingMessagesFromPort;
+            _port.OnSendSystemMessage -= _phone.ReceivingIncomingMessagesFromPort;
         }
 
         public void InitiateStartCall(IPhoneNumber calledNumber)
@@ -80,12 +78,7 @@ namespace ATS_BillingSystem.App.Infrastructure
         public void ReceivePhoneSystemMessage(object sender, SystemMessageEventArgs args)
         {
             args.Message = string.Format($" {_contract.PhoneNumber.Number} ) {args.Message}");
-            InvokeSystemMessage(this, args);
-        }
-
-        private void InvokeSystemMessage(object sender, SystemMessageEventArgs args)
-        {
-            OnSendAbonentSystemMessage?.Invoke(sender, args);
+            InvokeSendSystemMessage(this, args);
         }
     }
 }
