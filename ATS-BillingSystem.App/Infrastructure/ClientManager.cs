@@ -1,4 +1,6 @@
 ﻿using ATS_BillingSystem.App.ATS;
+using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.Infrastructure.Interfaces;
 using ATS_BillingSystem.App.Models.Abonents;
 
 namespace ATS_BillingSystem.App.Infrastructure
@@ -31,7 +33,7 @@ namespace ATS_BillingSystem.App.Infrastructure
             IGeneratorId idGenerator = new GuidGenerator();
             IAbonenId id = new AbonentId()
             {
-                Id = idGenerator.GetId(name + surname)
+                Id = idGenerator.GetId()
             };
 
             IPhoneNumberGenerator phoneNumberGenerator = new FiveDigitNumberGenerator();

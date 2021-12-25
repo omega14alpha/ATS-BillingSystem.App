@@ -1,4 +1,6 @@
-﻿using System;
+﻿using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.Infrastructure.Constants;
+using System;
 using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.ATS
@@ -18,7 +20,7 @@ namespace ATS_BillingSystem.App.ATS
         {
             if (port is null)
             {
-                throw new NullReferenceException($"Parameter '{nameof(port)}' cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(port)));
             }
 
             _ports.Add(port);
@@ -28,7 +30,7 @@ namespace ATS_BillingSystem.App.ATS
         {
             if (port is null)
             {
-                throw new NullReferenceException($"Parameter '{nameof(port)}' cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(port)));
             }
 
             _ports.Remove(port);

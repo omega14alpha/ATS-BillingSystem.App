@@ -1,4 +1,4 @@
-﻿namespace ATS_BillingSystem.App.Models.Abonents
+﻿namespace ATS_BillingSystem.App.BillingSystem.Interfaces
 {
     public interface ITariffPlan
     {

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ATS_BillingSystem.App.Infrastructure.Interfaces;
+using System;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {

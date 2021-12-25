@@ -1,6 +1,6 @@
 ﻿namespace ATS_BillingSystem.App.Infrastructure.Constants
 {
-    internal static class TextData
+    internal static class InfoText
     {
         public const string TargetPhoneBusy = "Target phone number is busy.";
 
@@ -27,5 +27,10 @@
         public const string PortNowFree = "The port is now free!";
 
         public const string NoConnectionsAtTheMoment = "There are no connections at the moment.";
+    }
+
+    internal static class ExceptionText
+    {
+        public const string CannotBeNull = "Parameter {0} cannot be equals null!";
     }
 }

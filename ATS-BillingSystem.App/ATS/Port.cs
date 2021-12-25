@@ -1,7 +1,8 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
+﻿using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.ATS.Models;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Infrastructure.Constants;
-using ATS_BillingSystem.App.Models.Abonents;
-using ATS_BillingSystem.App.Models.Systems;
 using System;
 
 namespace ATS_BillingSystem.App.ATS
@@ -50,7 +51,7 @@ namespace ATS_BillingSystem.App.ATS
         public void ConnectTerminalToPort(object sender, EventArgs args)
         {
             _state = PortState.Connect | PortState.Free;
-            SendSystemMessage(TextData.PhoneHasBeenConnected);
+            SendSystemMessage(InfoText.PhoneHasBeenConnected);
         }
 
         public void DisconnectTerminalFromPort(object sender, EventArgs args) => 
@@ -70,7 +71,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendSystemMessage(TextData.PortCurrentlyBusy);
+                SendSystemMessage(InfoText.PortCurrentlyBusy);
             }
         }
 
@@ -85,7 +86,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendSystemMessage(TextData.PortNowFree);
+                SendSystemMessage(InfoText.PortNowFree);
             }
         }
 

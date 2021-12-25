@@ -1,4 +1,5 @@
 ﻿using ATS_BillingSystem.App.EventsArgs;
+using ATS_BillingSystem.App.Infrastructure.Constants;
 using System;
 
 namespace ATS_BillingSystem.App.ATS
@@ -14,7 +15,7 @@ namespace ATS_BillingSystem.App.ATS
         {
             if (string.IsNullOrWhiteSpace(message))
             {
-                throw new ArgumentException("Paremeter 'message' cannot be empty or equals null!", nameof(message));
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(message)));
             }
 
             var args = new SystemMessageEventArgs() { Message = message };

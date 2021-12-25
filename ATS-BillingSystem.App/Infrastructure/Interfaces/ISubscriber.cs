@@ -1,10 +1,8 @@
-﻿using ATS_BillingSystem.App.BillingSystem;
-using ATS_BillingSystem.App.Models.Abonents;
-using ATS_BillingSystem.App.Models.Systems;
+﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using System;
 using System.Collections.Generic;
 
-namespace ATS_BillingSystem.App.Infrastructure
+namespace ATS_BillingSystem.App.Infrastructure.Interfaces
 {
     internal interface ISubscriber
     {

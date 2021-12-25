@@ -1,13 +1,15 @@
 ﻿using ATS_BillingSystem.App.ATS;
+using ATS_BillingSystem.App.ATS.Interfaces;
 using ATS_BillingSystem.App.BillingSystem;
-using ATS_BillingSystem.App.Models.Abonents;
-using ATS_BillingSystem.App.Models.Systems;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Models;
+using ATS_BillingSystem.App.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
-    internal class ProgramViewModel : Communicator, IViewModel
+    internal class PhoneSystem : IPhoneSystem
     {
         private readonly string[] _firstnames = new[] { "Bob", "Jecob", "Fred", "Styu", "Sten", "Ann", "Tramp" };
 
@@ -35,7 +37,7 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         public ISubscriber CalledTestAbonent => _calledTestAbonent;
 
-        public ProgramViewModel()
+        public PhoneSystem()
         {
             _callStatistics = new StatisticsCollector();
             _portController = new PortController();

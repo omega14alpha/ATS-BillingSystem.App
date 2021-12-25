@@ -1,7 +1,8 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
+﻿using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.ATS.Models;
+using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Infrastructure.Constants;
 using ATS_BillingSystem.App.Models.Abonents;
-using ATS_BillingSystem.App.Models.Systems;
 using System;
 using System.Linq;
 
@@ -28,11 +29,11 @@ namespace ATS_BillingSystem.App.ATS
                 string message = string.Empty;
                 if ((targetPort.State & PortState.Busy) != 0)
                 {
-                    message = TextData.TargetPhoneBusy;
+                    message = InfoText.TargetPhoneBusy;
                 }
                 else if (targetPort.State == PortState.Disconnect)
                 {
-                    message = TextData.TargetPhoneDisconected;
+                    message = InfoText.TargetPhoneDisconected;
                 }
                 else
                 {
@@ -69,12 +70,12 @@ namespace ATS_BillingSystem.App.ATS
         {
             if (abonentId == null)
             {
-                throw new ArgumentNullException(nameof(abonentId), "Parameter 'abonentId' cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(abonentId)));
             }
 
             if (calledNumber == null)
             {
-                throw new ArgumentNullException(nameof(calledNumber), "Parameter 'calledNumber' cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(calledNumber)));
             }
 
             var args = new HistoryEventArgs()
@@ -91,7 +92,7 @@ namespace ATS_BillingSystem.App.ATS
         {
             if (abonentId == null)
             {
-                throw new ArgumentNullException(nameof(abonentId), "Parameter 'abonentId' cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(abonentId)));
             }
 
             var args = new HistoryEventArgs()
@@ -103,14 +104,10 @@ namespace ATS_BillingSystem.App.ATS
             InvokeOnRecordingCallEndData(this, args);
         }
 
-        private void InvokeRecordingCallStartData(object sender, HistoryEventArgs args)
-        {
+        private void InvokeRecordingCallStartData(object sender, HistoryEventArgs args) => 
             OnRecordingCallStartData?.Invoke(sender, args);
-        }
-
-        private void InvokeOnRecordingCallEndData(object sender, HistoryEventArgs args)
-        {
-            OnRecordingCallEndData?.Invoke(sender, args);
-        }
+        
+        private void InvokeOnRecordingCallEndData(object sender, HistoryEventArgs args) => 
+            OnRecordingCallEndData?.Invoke(sender, args);        
     }
 }

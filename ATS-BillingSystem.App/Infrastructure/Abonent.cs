@@ -1,24 +1,24 @@
-﻿using ATS_BillingSystem.App.ATS;
-using ATS_BillingSystem.App.BillingSystem;
+﻿using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using ATS_BillingSystem.App.EventsArgs;
-using ATS_BillingSystem.App.Models.Abonents;
-using ATS_BillingSystem.App.Models.Systems;
+using ATS_BillingSystem.App.Infrastructure.Constants;
+using ATS_BillingSystem.App.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
-    internal class Abonent : Communicator, IMessager, IAbonent
+    internal class Abonent : IAbonent
     {
         private IContract _contract;
 
-        private IPhone _phone;
+        private ITerminal _phone;
 
         private IPort _port;
 
         public IContract Contract => _contract;
 
-        public Abonent(IContract contract, IPhone phone, IPort port)
+        public Abonent(IContract contract, ITerminal phone, IPort port)
         {
             _contract = contract;
             _phone = phone;
@@ -54,7 +54,7 @@ namespace ATS_BillingSystem.App.Infrastructure
         {
             if (calledNumber is null)
             {
-                throw new ArgumentNullException($"Parameter {nameof(calledNumber)} cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(calledNumber)));
             }
 
             _phone.StartCall(calledNumber);
@@ -69,7 +69,7 @@ namespace ATS_BillingSystem.App.Infrastructure
         {
             if (statisticsCollector is null)
             {
-                throw new ArgumentNullException($"Parameter {nameof(statisticsCollector)} cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(statisticsCollector)));
             }
 
             return statisticsCollector.GetAbonentStatistic(_contract.AbonentId, func);

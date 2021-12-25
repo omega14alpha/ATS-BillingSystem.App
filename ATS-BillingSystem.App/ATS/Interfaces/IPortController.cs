@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace ATS_BillingSystem.App.ATS
+namespace ATS_BillingSystem.App.ATS.Interfaces
 {
     internal interface IPortController
     {

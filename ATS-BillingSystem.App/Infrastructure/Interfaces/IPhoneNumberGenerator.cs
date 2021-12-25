@@ -1,4 +1,4 @@
-﻿namespace ATS_BillingSystem.App.Infrastructure
+﻿namespace ATS_BillingSystem.App.Infrastructure.Interfaces
 {
     internal interface IPhoneNumberGenerator
     {

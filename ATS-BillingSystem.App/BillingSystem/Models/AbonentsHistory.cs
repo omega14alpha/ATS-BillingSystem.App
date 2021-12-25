@@ -1,7 +1,7 @@
-﻿using ATS_BillingSystem.App.Models.Abonents;
+﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using System;
 
-namespace ATS_BillingSystem.App.Models.Systems
+namespace ATS_BillingSystem.App.BillingSystem.Models
 {
     internal class AbonentsHistory : IAbonentsHistory
     {

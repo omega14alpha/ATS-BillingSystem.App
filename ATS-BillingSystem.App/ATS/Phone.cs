@@ -1,11 +1,12 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
+﻿using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Infrastructure.Constants;
-using ATS_BillingSystem.App.Models.Abonents;
 using System;
 
 namespace ATS_BillingSystem.App.ATS
 {
-    internal class Phone : Communicator, IPhone
+    internal class Phone : Communicator, ITerminal
     {
         private IPhoneNumber _calledNumber;
 
@@ -27,12 +28,12 @@ namespace ATS_BillingSystem.App.ATS
         {
             if (calledNumber is null)
             {
-                throw new ArgumentNullException($"Parameter {nameof(calledNumber)} cannot be equals null!");
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(calledNumber)));
             }
 
             _calledNumber = calledNumber;
             var args = new CallDataEventArgs() { CalledNumber = calledNumber };
-            string message = string.Format(TextData.InitiateCall, _calledNumber.Number);
+            string message = string.Format(InfoText.InitiateCall, _calledNumber.Number);
             SendSystemMessage(message);
             InvokePhoneStartCall(this, args);
         }
@@ -42,26 +43,26 @@ namespace ATS_BillingSystem.App.ATS
             if (_calledNumber != null)
             {
                 var args = new CallDataEventArgs() { CalledNumber = _calledNumber };
-                string message = string.Format(TextData.StopCall, _calledNumber.Number);
+                string message = string.Format(InfoText.StopCall, _calledNumber.Number);
                 _calledNumber = null;
                 SendSystemMessage(message);
                 InvokePhoneStopCall(this, args);
             }
             else
             {
-                SendSystemMessage(TextData.NoConnectionsAtTheMoment);
+                SendSystemMessage(InfoText.NoConnectionsAtTheMoment);
             }
         }
 
         public void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args)
         {
-            string message = string.Format(TextData.CommunacationBegin, args.SourceNumber.Number);
+            string message = string.Format(InfoText.CommunacationBegin, args.SourceNumber.Number);
             SendSystemMessage(message);
         }
 
         public void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args)
         {
-            string message = string.Format(TextData.CommunicationInterrupted, args.SourceNumber.Number);
+            string message = string.Format(InfoText.CommunicationInterrupted, args.SourceNumber.Number);
             SendSystemMessage(message);
         }
 
@@ -73,11 +74,11 @@ namespace ATS_BillingSystem.App.ATS
             if (OnDisconnectFromPort != null)
             {
                 OnDisconnectFromPort.Invoke(sender, args);
-                SendSystemMessage(TextData.PhoneHasBeenDisconnected);
+                SendSystemMessage(InfoText.PhoneHasBeenDisconnected);
             }
             else
             {
-                SendSystemMessage(TextData.PhoneAlreadyDisconnected);
+                SendSystemMessage(InfoText.PhoneAlreadyDisconnected);
             }
         }
 
@@ -89,7 +90,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendSystemMessage(TextData.PhoneDisconnected);
+                SendSystemMessage(InfoText.PhoneDisconnected);
             }
         }
 
@@ -101,7 +102,7 @@ namespace ATS_BillingSystem.App.ATS
             }
             else
             {
-                SendSystemMessage(TextData.PhoneDisconnected);
+                SendSystemMessage(InfoText.PhoneDisconnected);
             }
         }
     }

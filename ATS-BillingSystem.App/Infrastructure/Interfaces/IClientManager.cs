@@ -1,6 +1,6 @@
 ﻿using ATS_BillingSystem.App.Models.Abonents;
 
-namespace ATS_BillingSystem.App.Infrastructure
+namespace ATS_BillingSystem.App.Infrastructure.Interfaces
 {
     internal interface IClientManager
     {

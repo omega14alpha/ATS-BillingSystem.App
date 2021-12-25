@@ -1,5 +1,6 @@
 ﻿using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Infrastructure;
+using ATS_BillingSystem.App.Infrastructure.Interfaces;
 using System;
 using System.Linq;
 
@@ -7,7 +8,7 @@ namespace ATS_BillingSystem.App
 {
     internal class Program
     {
-        private static IViewModel _viewModel;
+        private static IPhoneSystem _viewModel;
 
         static void Main(string[] args)
         {
@@ -17,7 +18,7 @@ namespace ATS_BillingSystem.App
 
         private static void Init()
         {
-            _viewModel = new ProgramViewModel();
+            _viewModel = new PhoneSystem();
             _viewModel.OnSendSystemMessage += ShowReceivedMessage;
             _viewModel.CreateTestAbonentsCollection(6);
             _viewModel.ChoiseRandomAbonent();
