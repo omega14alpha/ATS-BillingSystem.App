@@ -1,7 +1,9 @@
-﻿namespace ATS_BillingSystem.App.Infrastructure
+﻿using System;
+
+namespace ATS_BillingSystem.App.Infrastructure
 {
     internal interface IGeneratorId
     {
-        string GetId(string encodedData);
+        Guid GetId(string encodedData);
     }
 }

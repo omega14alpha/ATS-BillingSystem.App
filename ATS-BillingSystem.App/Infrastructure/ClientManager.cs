@@ -28,7 +28,7 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         private IContract ConcludeNewContract(string name, string surname, ITariffPlan tariffPlan)
         {
-            IGeneratorId idGenerator = new MD5Generator();
+            IGeneratorId idGenerator = new GuidGenerator();
             IAbonenId id = new AbonentId()
             {
                 Id = idGenerator.GetId(name + surname)

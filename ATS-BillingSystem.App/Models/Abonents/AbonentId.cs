@@ -1,7 +1,9 @@
-﻿namespace ATS_BillingSystem.App.Models.Abonents
+﻿using System;
+
+namespace ATS_BillingSystem.App.Models.Abonents
 {
     internal class AbonentId : IAbonenId
     {
-        public string Id { get; set; }
+        public Guid Id { get; set; }
     }
 }
