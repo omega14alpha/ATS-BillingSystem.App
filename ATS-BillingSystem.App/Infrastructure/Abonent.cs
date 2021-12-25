@@ -18,6 +18,8 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         public IContract Contract => _contract;
 
+        public event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
+
         public Abonent(IContract contract, ITerminal phone, IPort port)
         {
             _contract = contract;
@@ -75,10 +77,10 @@ namespace ATS_BillingSystem.App.Infrastructure
             return statisticsCollector.GetAbonentStatistic(_contract.AbonentId, func);
         }
 
-        public override void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args)
+        public void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args)
         {
             args.Message = string.Format($" {_contract.PhoneNumber.Number} ) {args.Message}");
-            InvokeSendSystemMessage(this, args);
+            OnSendSystemMessage?.Invoke(this, args);
         }
     }
 }

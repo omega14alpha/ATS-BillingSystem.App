@@ -1,4 +1,4 @@
-﻿using ATS_BillingSystem.App.Models.Abonents;
+﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
 
 namespace ATS_BillingSystem.App.Infrastructure.Interfaces
 {

@@ -1,4 +1,4 @@
-﻿using ATS_BillingSystem.App.Models.Abonents;
+﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using System;
 
 namespace ATS_BillingSystem.App.EventsArgs

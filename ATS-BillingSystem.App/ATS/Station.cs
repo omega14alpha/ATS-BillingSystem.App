@@ -1,8 +1,8 @@
 ﻿using ATS_BillingSystem.App.ATS.Interfaces;
 using ATS_BillingSystem.App.ATS.Models;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using ATS_BillingSystem.App.EventsArgs;
 using ATS_BillingSystem.App.Infrastructure.Constants;
-using ATS_BillingSystem.App.Models.Abonents;
 using System;
 using System.Linq;
 

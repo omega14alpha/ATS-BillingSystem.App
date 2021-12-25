@@ -1,10 +1,14 @@
 ﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.EventsArgs;
+using System;
 using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.Infrastructure.Interfaces
 {
     internal interface IPhoneSystem
     {
+        event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
+
         IEnumerable<ISubscriber> AbonentsCollection { get; }
 
         ISubscriber Abonent { get; }
@@ -32,5 +36,7 @@ namespace ATS_BillingSystem.App.Infrastructure.Interfaces
         void FillTestDataToStatisticHandler();
 
         IEnumerable<IAbonentsHistory> GetCurrentAbonentStatistic();
+
+        void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args);
     }
 }

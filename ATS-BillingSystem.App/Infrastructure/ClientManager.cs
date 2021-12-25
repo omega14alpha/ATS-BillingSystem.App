@@ -1,7 +1,8 @@
 ﻿using ATS_BillingSystem.App.ATS;
 using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Models;
 using ATS_BillingSystem.App.Infrastructure.Interfaces;
-using ATS_BillingSystem.App.Models.Abonents;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {

@@ -1,4 +1,4 @@
-﻿using ATS_BillingSystem.App.Models.Systems;
+﻿using ATS_BillingSystem.App.ATS.Models;
 using System;
 
 namespace ATS_BillingSystem.App.EventsArgs

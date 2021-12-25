@@ -3,6 +3,8 @@ using ATS_BillingSystem.App.ATS.Interfaces;
 using ATS_BillingSystem.App.BillingSystem;
 using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using ATS_BillingSystem.App.BillingSystem.Models;
+using ATS_BillingSystem.App.EventsArgs;
+using ATS_BillingSystem.App.Infrastructure.Constants;
 using ATS_BillingSystem.App.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -30,6 +32,8 @@ namespace ATS_BillingSystem.App.Infrastructure
         private IAbonent _calledTestAbonent;
 
         private Random _rand;
+
+        public event EventHandler<SystemMessageEventArgs> OnSendSystemMessage;
 
         public IEnumerable<ISubscriber> AbonentsCollection => _abonents;
 
@@ -139,5 +143,22 @@ namespace ATS_BillingSystem.App.Infrastructure
                 return null;
             }
         }
+
+        public void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args) =>
+            InvokeSendSystemMessage(this, args);
+
+        private void SendSystemMessage(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+            {
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(message)));
+            }
+
+            var args = new SystemMessageEventArgs() { Message = message };
+            InvokeSendSystemMessage(this, args);
+        }
+
+        private void InvokeSendSystemMessage(object sender, SystemMessageEventArgs args) =>
+            OnSendSystemMessage?.Invoke(sender, args);
     }
 }
