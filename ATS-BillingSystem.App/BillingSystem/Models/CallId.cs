@@ -3,8 +3,8 @@ using System;
 
 namespace ATS_BillingSystem.App.BillingSystem.Models
 {
-    internal class AbonentId : IIdentifier
+    internal class CallId : IIdentifier
     {
-        public Guid Id { get; set; }
+        public Guid Id { get ; set; }
     }
 }

@@ -3,12 +3,12 @@ using System;
 
 namespace ATS_BillingSystem.App.EventsArgs
 {
-    internal class HistoryEventArgs : EventArgs
+    internal class OutgoingCallDataEventArgs : EventArgs
     {
         public IIdentifier CallId { get; set; }
 
-        public ISim Sim { get; set; }
+        public ISim AbonentData { get; set; }
 
-        public DateTime DateTime { get; set; }
+        public IPhoneNumber CalledNumber { get; set; }
     }
 }

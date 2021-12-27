@@ -7,30 +7,28 @@ namespace ATS_BillingSystem.App.ATS.Interfaces
 {
     internal interface IPort : IMessager
     {
-        IPhoneNumber Number { get; }
+        PortState State { get; }
 
-        PortState State { get; set; }
+        Func<object, OutgoingCallDataEventArgs, IIdentifier> OnPortStartCall { get; set; }
 
-        Func<object, CallDataEventArgs, bool> OnPortStartCall { get; set; }
+        event EventHandler<OutgoingCallDataEventArgs> OnPortStopCall;
 
-        event EventHandler<PortStateEventArgs> OnPortStateChange;
+        public event EventHandler<IncomingCallDataEventArgs> OnPortStartIncomingCall;
 
-        event EventHandler<CallDataEventArgs> OnPortStopCall;
-
-        event EventHandler<CallDataEventArgs> OnPortStartIncomingCall;
-
-        event EventHandler<CallDataEventArgs> OnPortStopIncomingCall;
+        public event EventHandler<IncomingCallDataEventArgs> OnPortStopIncomingCall;
 
         void ConnectTerminalToPort(object sender, EventArgs args);
 
         void DisconnectTerminalFromPort(object sender, EventArgs args);
 
-        void PortStartCall(object sender, CallDataEventArgs args);
+        void PortStartCall(object sender, OutgoingCallDataEventArgs args);
 
-        void PortStopCall(object sender, CallDataEventArgs args);
+        void PortStopCall(object sender, OutgoingCallDataEventArgs args);
 
-        void PortStartIncomingCall(IPhoneNumber sourceNumber);
+        void PortStartIncomingCall(object sender, IncomingCallDataEventArgs args);
 
-        void PortStopIncomingCall(IPhoneNumber sourceNumber);
+        void PortStopIncomingCall(object sender, IncomingCallDataEventArgs args);
+
+        void PortAcceptIncomingCall(object sender, IncomingCallDataEventArgs args);
     }
 }

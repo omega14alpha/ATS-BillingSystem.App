@@ -10,9 +10,9 @@ namespace ATS_BillingSystem.App.ATS.Interfaces
 
         event EventHandler<EventArgs> OnDisconnectFromPort;
 
-        event EventHandler<CallDataEventArgs> OnPhoneStartCall;
+        event EventHandler<OutgoingCallDataEventArgs> OnPhoneStartCall;
 
-        event EventHandler<CallDataEventArgs> OnPhoneStopCall;
+        event EventHandler<OutgoingCallDataEventArgs> OnPhoneStopCall;
 
         void ConnectToPort();
 
@@ -22,8 +22,12 @@ namespace ATS_BillingSystem.App.ATS.Interfaces
 
         void StopCall();
 
-        void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args);
+        void AcceptIncomingCall();
 
-        void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args);
+        void RejectIncomingCall();
+
+        void AcceptIncomingCallFromPort(object sender, IncomingCallDataEventArgs args);
+
+        void AcceptIncomingEndCallFromPort(object sender, IncomingCallDataEventArgs args);
     }
 }

@@ -8,6 +8,7 @@ using ATS_BillingSystem.App.Infrastructure.Constants;
 using ATS_BillingSystem.App.Infrastructure.Interfaces;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace ATS_BillingSystem.App.Infrastructure
 {
@@ -21,7 +22,11 @@ namespace ATS_BillingSystem.App.Infrastructure
 
         private IStatisticsCollector _callStatistics;
 
-        private PortController _portController;
+        private IBillingManager _billingManager;
+
+        private ITariffController _tariffController;
+
+        private IPortController _portController;
 
         private IStation _station;
 
@@ -44,24 +49,27 @@ namespace ATS_BillingSystem.App.Infrastructure
         public PhoneSystem()
         {
             _callStatistics = new StatisticsCollector();
+            _tariffController = new TariffController();
+            _billingManager = new BillingManager(_callStatistics, _tariffController);
             _portController = new PortController();
-           _station = new Station(_portController);
+            _station = new Station(_portController);
             _abonents = new List<IAbonent>();
-            _rand = new Random(); 
+            _rand = new Random();
 
-            _station.OnRecordingCallStartData += _callStatistics.SaveNewCallStartData;
-            _station.OnRecordingCallEndData += _callStatistics.SaveNewCallEndData;
+            _station.OnRecordingCallStartData += _billingManager.SaveNewCallStartData;
+            _station.OnRecordingCallEndData += _billingManager.SaveNewCallEndData;
         }
 
         public void CreateTestAbonentsCollection(int testAbonentCount)
         {
             ITariffPlan tariffPlan = new TariffPlanLight()
             {
-                PlanId = 1,
+                PlanId = new TariffId() { Id = IdGenerator.GetId() },
                 TarrifName = _tarrifName,
                 PriceOfOneMinute = 0.7
             };
 
+            _tariffController.AddNewTariffPlan(tariffPlan);
             IClientManager clientManager = new ClientManager(_station, _portController);
 
             for (int i = 0; i < testAbonentCount; i++)
@@ -87,22 +95,30 @@ namespace ATS_BillingSystem.App.Infrastructure
             _calledTestAbonent.OnSendSystemMessage += InvokeSendSystemMessage;
         }
 
-        public void ConnectToPort() => _abonent.ConnectToPort();        
+        public void ConnectToPort() => _abonent.ConnectToPort();
 
-        public void TestAbonentConnectToPort() => _calledTestAbonent.ConnectToPort();        
+        public void TestAbonentConnectToPort() => _calledTestAbonent.ConnectToPort();
 
         public void TestAbonentDisconnectFromPort() => _calledTestAbonent.DisconectFromPort();
-        
+
         public void DisconnectFromPort() => _abonent.DisconectFromPort();
 
         public void CallToTestAbonent() => _abonent.InitiateStartCall(_calledTestAbonent.Contract.PhoneNumber);
-        
+
         public void StopCurrentCall() => _abonent.InitiateStopCall();
-        
+
+        public void AbonentAcceptCall() => _abonent.AcceptIncomingCall();
+
+        public void AbonentRejectCall() => _abonent.RejectIncomingCall();
+
+        public void TestAbonentAcceptCall() => _calledTestAbonent.AcceptIncomingCall();
+
+        public void TestAbonentRejectCall() => _calledTestAbonent.RejectIncomingCall();
 
         public void FillTestDataToStatisticHandler()
         {
             ICollection<IAbonentsHistory> testCollection = new List<IAbonentsHistory>();
+            var price = _tariffController.Tariffs.FirstOrDefault().PriceOfOneMinute;
 
             for (int month = 1; month < 13; month++)
             {
@@ -113,7 +129,17 @@ namespace ATS_BillingSystem.App.Infrastructure
                     var beginDateTime = new DateTime(2021, month, day).AddSeconds(randomValue);
                     var endDateTime = new DateTime(2021, month, day).AddSeconds(_rand.Next(randomValue, randomValue + 2000));
                     var randomNumber = _abonents[_rand.Next(_abonents.Count)].Contract.PhoneNumber;
-                    var tempData = new AbonentsHistory() { BeginCallDateTime = beginDateTime, EndCallDateTime = endDateTime, CalledNumber = randomNumber };
+                    var talkTime = (endDateTime - beginDateTime).TotalMinutes;
+                    var cost = talkTime * price;
+
+                    var tempData = new AbonentsHistory()
+                    {
+                        BeginCallDateTime = beginDateTime,
+                        EndCallDateTime = endDateTime,
+                        CalledNumber = randomNumber,
+                        TalkTime = talkTime,
+                        Cost = cost
+                    };
 
                     testCollection.Add(tempData);
                 }
@@ -129,13 +155,25 @@ namespace ATS_BillingSystem.App.Infrastructure
             }
         }
 
-        public IEnumerable<IAbonentsHistory> GetCurrentAbonentStatistic()
+        public IEnumerable<IAbonentsHistory> GetStatisticsForMonth()
         {
-            int month = _rand.Next(DateTime.Now.Month);
-            Func<IAbonentsHistory, bool> func = s => s.BeginCallDateTime.Month == month;
             try
             {
-                return Abonent.GetStatistic(_callStatistics, func);
+                int month = _rand.Next(DateTime.Now.Month);
+                return _billingManager.GetCallsStatistic(_abonent.Contract.AbonentId, s => s.BeginCallDateTime.Month == month);
+            }
+            catch (Exception ex)
+            {
+                SendSystemMessage(ex.Message);
+                return null;
+            }
+        }
+
+        public IEnumerable<IAbonentsHistory> GetAllStatistics()
+        {
+            try
+            {
+                return _billingManager.GetCallsStatistic(_abonent.Contract.AbonentId);
             }
             catch (Exception ex)
             {
@@ -145,7 +183,7 @@ namespace ATS_BillingSystem.App.Infrastructure
         }
 
         public void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args) =>
-            InvokeSendSystemMessage(this, args);
+        InvokeSendSystemMessage(this, args);
 
         private void SendSystemMessage(string message)
         {

@@ -15,5 +15,9 @@ namespace ATS_BillingSystem.App.Infrastructure.Interfaces
         void InitiateStartCall(IPhoneNumber calledNumber);
 
         void InitiateStopCall();
+
+        void AcceptIncomingCall();
+
+        void RejectIncomingCall();
     }
 }

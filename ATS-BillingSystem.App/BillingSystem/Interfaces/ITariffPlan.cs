@@ -1,8 +1,8 @@
 ﻿namespace ATS_BillingSystem.App.BillingSystem.Interfaces
 {
-    public interface ITariffPlan
+    internal interface ITariffPlan
     {
-        int PlanId { get; set; }
+        IIdentifier PlanId { get; set; }
 
         string TarrifName { get; set; }
 

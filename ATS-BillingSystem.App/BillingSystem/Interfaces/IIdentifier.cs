@@ -2,7 +2,7 @@
 
 namespace ATS_BillingSystem.App.BillingSystem.Interfaces
 {
-    internal interface IAbonenId
+    internal interface IIdentifier
     {
         Guid Id { get; set; }
     }

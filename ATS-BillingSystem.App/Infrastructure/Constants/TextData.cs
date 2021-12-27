@@ -8,7 +8,7 @@
 
         public const string InitiateCall = "Initiate call on number {0}.";
 
-        public const string StopCall = "Stop call on number {0}.";
+        public const string CallCanceled = "Call canceled.";
 
         public const string CommunacationBegin = "Communication with number {0} has begun.";
 
@@ -27,6 +27,8 @@
         public const string PortNowFree = "The port is now free!";
 
         public const string NoConnectionsAtTheMoment = "There are no connections at the moment.";
+
+        public const string YouAreBeingCalled = "You are being called by a subscriber number {0}.";
     }
 
     internal static class ExceptionText

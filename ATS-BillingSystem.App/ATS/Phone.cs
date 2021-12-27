@@ -8,21 +8,53 @@ namespace ATS_BillingSystem.App.ATS
 {
     internal class Phone : Communicator, ITerminal
     {
-        private IPhoneNumber _calledNumber;
+        private ISim _sim;
+
+        private IPort _port;
+
+        private IPhoneNumber _externalPhoneNumber;
 
         public event EventHandler<EventArgs> OnConnectToPort;
 
         public event EventHandler<EventArgs> OnDisconnectFromPort;
 
-        public event EventHandler<CallDataEventArgs> OnPhoneStartCall;
+        public event EventHandler<OutgoingCallDataEventArgs> OnPhoneStartCall;
 
-        public event EventHandler<CallDataEventArgs> OnPhoneStopCall;
+        public event EventHandler<OutgoingCallDataEventArgs> OnPhoneStopCall;
 
-        public void ConnectToPort() =>
-            InvokeConnectToPort(this, EventArgs.Empty);        
+        public event EventHandler<IncomingCallDataEventArgs> OnAcceptIncomingCall;
 
-        public void DisconnectFromPort() => 
-            InvokeDisconnectFromPort(this, EventArgs.Empty);        
+        public Phone(ISim sim, IPort port)
+        {
+            _sim = sim;
+            _port = port;
+        }
+
+        public void ConnectToPort()
+        {
+            _port.OnSendSystemMessage += ReceivingIncomingMessages;
+            _port.OnPortStartIncomingCall += AcceptIncomingCallFromPort;
+            _port.OnPortStopIncomingCall += AcceptIncomingEndCallFromPort;
+            OnPhoneStartCall += _port.PortStartCall;
+            OnPhoneStopCall += _port.PortStopCall;
+            OnConnectToPort += _port.ConnectTerminalToPort;
+            OnDisconnectFromPort += _port.DisconnectTerminalFromPort;
+            OnAcceptIncomingCall += _port.PortAcceptIncomingCall;
+            InvokeConnectToPort(this, EventArgs.Empty);
+        }
+
+        public void DisconnectFromPort()
+        {
+            InvokeDisconnectFromPort(this, EventArgs.Empty);
+            OnPhoneStartCall -= _port.PortStartCall;
+            OnPhoneStopCall -= _port.PortStopCall;
+            OnConnectToPort -= _port.ConnectTerminalToPort;
+            OnAcceptIncomingCall -= _port.PortAcceptIncomingCall;
+            OnDisconnectFromPort -= _port.DisconnectTerminalFromPort;
+            _port.OnPortStartIncomingCall -= AcceptIncomingCallFromPort;
+            _port.OnPortStopIncomingCall -= AcceptIncomingEndCallFromPort;
+            _port.OnSendSystemMessage -= ReceivingIncomingMessages;
+        }
 
         public void StartCall(IPhoneNumber calledNumber)
         {
@@ -31,22 +63,20 @@ namespace ATS_BillingSystem.App.ATS
                 throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(calledNumber)));
             }
 
-            _calledNumber = calledNumber;
-            var args = new CallDataEventArgs() { CalledNumber = calledNumber };
-            string message = string.Format(InfoText.InitiateCall, _calledNumber.Number);
-            SendSystemMessage(message);
+            _externalPhoneNumber = calledNumber;
+            var args = new OutgoingCallDataEventArgs() { AbonentData = _sim, CalledNumber = calledNumber };
+            SendSystemMessage(string.Format(InfoText.InitiateCall, _externalPhoneNumber.Number));
             InvokePhoneStartCall(this, args);
         }
 
         public void StopCall()
         {
-            if (_calledNumber != null)
+            if (_externalPhoneNumber != null)
             {
-                var args = new CallDataEventArgs() { CalledNumber = _calledNumber };
-                string message = string.Format(InfoText.StopCall, _calledNumber.Number);
-                _calledNumber = null;
-                SendSystemMessage(message);
+                var args = new OutgoingCallDataEventArgs() { AbonentData = _sim, CalledNumber = _externalPhoneNumber };
+                SendSystemMessage(string.Format(InfoText.CallCanceled));
                 InvokePhoneStopCall(this, args);
+                _externalPhoneNumber = null;
             }
             else
             {
@@ -54,20 +84,26 @@ namespace ATS_BillingSystem.App.ATS
             }
         }
 
-        public void AcceptIncomingCallFromPort(object sender, CallDataEventArgs args)
+        public void AcceptIncomingCallFromPort(object sender, IncomingCallDataEventArgs args)
         {
-            string message = string.Format(InfoText.CommunacationBegin, args.SourceNumber.Number);
-            SendSystemMessage(message);
+            _externalPhoneNumber = args.SourceNumber;
+            SendSystemMessage(string.Format(InfoText.YouAreBeingCalled, args.SourceNumber.Number));
         }
 
-        public void AcceptIncomingEndCallFromPort(object sender, CallDataEventArgs args)
+        public void AcceptIncomingCall() => 
+            InvokeOnAcceptIncomingCall(this, new IncomingCallDataEventArgs() { SourceNumber = _externalPhoneNumber });
+
+        public void RejectIncomingCall() => StopCall();
+        
+
+        public void AcceptIncomingEndCallFromPort(object sender, IncomingCallDataEventArgs args)
         {
             string message = string.Format(InfoText.CommunicationInterrupted, args.SourceNumber.Number);
             SendSystemMessage(message);
         }
 
         private void InvokeConnectToPort(object sender, EventArgs args) =>
-            OnConnectToPort?.Invoke(this, args);        
+            OnConnectToPort?.Invoke(this, args);
 
         private void InvokeDisconnectFromPort(object sender, EventArgs args)
         {
@@ -82,7 +118,7 @@ namespace ATS_BillingSystem.App.ATS
             }
         }
 
-        private void InvokePhoneStartCall(object sender, CallDataEventArgs args)
+        private void InvokePhoneStartCall(object sender, OutgoingCallDataEventArgs args)
         {
             if (OnPhoneStartCall != null)
             {
@@ -94,7 +130,7 @@ namespace ATS_BillingSystem.App.ATS
             }
         }
 
-        private void InvokePhoneStopCall(object sender, CallDataEventArgs args)
+        private void InvokePhoneStopCall(object sender, OutgoingCallDataEventArgs args)
         {
             if (OnPhoneStopCall != null)
             {
@@ -105,5 +141,8 @@ namespace ATS_BillingSystem.App.ATS
                 SendSystemMessage(InfoText.PhoneDisconnected);
             }
         }
+
+        private void InvokeOnAcceptIncomingCall(object sender, IncomingCallDataEventArgs args) => 
+            OnAcceptIncomingCall?.Invoke(sender, args);
     }
 }

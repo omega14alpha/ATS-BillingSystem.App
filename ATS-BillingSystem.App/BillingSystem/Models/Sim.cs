@@ -2,16 +2,12 @@
 
 namespace ATS_BillingSystem.App.BillingSystem.Models
 {
-    internal class AbonentContract : IContract
+    internal class Sim : ISim
     {
         public IIdentifier AbonentId { get; set; }
 
-        public string Name { get; set; }
-
-        public string Surname { get; set; }
+        public IIdentifier TariffId { get; set; }
 
         public IPhoneNumber PhoneNumber { get; set; }
-
-        public ITariffPlan TariffPlan { get; set; }
     }
 }

@@ -4,7 +4,7 @@ namespace ATS_BillingSystem.App.BillingSystem.Models
 {
     internal class TariffPlanLight : ITariffPlan
     {
-        public int PlanId { get; set; }
+        public IIdentifier PlanId { get; set; }
 
         public string TarrifName { get; set; }
 

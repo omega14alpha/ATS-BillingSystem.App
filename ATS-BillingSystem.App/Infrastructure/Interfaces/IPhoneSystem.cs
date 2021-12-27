@@ -35,8 +35,18 @@ namespace ATS_BillingSystem.App.Infrastructure.Interfaces
 
         void FillTestDataToStatisticHandler();
 
-        IEnumerable<IAbonentsHistory> GetCurrentAbonentStatistic();
-
         void ReceivingIncomingMessages(object sender, SystemMessageEventArgs args);
+
+        void TestAbonentRejectCall();
+
+        void TestAbonentAcceptCall();
+
+        void AbonentAcceptCall();
+
+        void AbonentRejectCall();
+
+        IEnumerable<IAbonentsHistory> GetStatisticsForMonth();
+
+        IEnumerable<IAbonentsHistory> GetAllStatistics();
     }
 }

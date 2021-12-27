@@ -9,63 +9,45 @@ namespace ATS_BillingSystem.App.ATS
 {
     internal class Port : Communicator, IPort
     {
-        private IPhoneNumber _number;
-
-        private IAbonenId _abonentId;
-
         private PortState _state;
 
-        public IPhoneNumber Number => _number;
+        private IIdentifier _currentCallId;
 
-        public PortState State
+        public PortState State => _state;
+
+        public Func<object, OutgoingCallDataEventArgs, IIdentifier> OnPortStartCall { get; set; }
+
+        public event EventHandler<OutgoingCallDataEventArgs> OnPortStopCall;
+
+        public event EventHandler<IncomingCallDataEventArgs> OnPortStartIncomingCall;
+
+        public event EventHandler<IncomingCallDataEventArgs> OnPortStopIncomingCall;
+
+        public Port()
         {
-            get => _state;
-            set
-            {
-                if (_state != value)
-                {
-                    _state = value;
-                    var args = new PortStateEventArgs() { NewState = State };
-                    InvokePortStateChanged(this, args);
-                }
-            }
-        }
-
-        public Func<object, CallDataEventArgs, bool> OnPortStartCall { get; set; }
-
-        public event EventHandler<PortStateEventArgs> OnPortStateChange;
-
-        public event EventHandler<CallDataEventArgs> OnPortStopCall;
-
-        public event EventHandler<CallDataEventArgs> OnPortStartIncomingCall;
-
-        public event EventHandler<CallDataEventArgs> OnPortStopIncomingCall;
-
-        public Port(IAbonenId abonentId, IPhoneNumber number)
-        {
-            _abonentId = abonentId;
-            _number = number;
             _state = PortState.Disconnect;
         }
 
         public void ConnectTerminalToPort(object sender, EventArgs args)
         {
-            _state = PortState.Connect | PortState.Free;
-            SendSystemMessage(InfoText.PhoneHasBeenConnected);
+            if (_state == PortState.Disconnect)
+            {
+                _state = PortState.Connect | PortState.Free;
+                SendSystemMessage(InfoText.PhoneHasBeenConnected);
+            }
         }
 
-        public void DisconnectTerminalFromPort(object sender, EventArgs args) => 
-            _state = PortState.Disconnect;        
+        public void DisconnectTerminalFromPort(object sender, EventArgs args) =>
+            _state = PortState.Disconnect;
 
-        public void PortStartCall(object sender, CallDataEventArgs args)
+        public void PortStartCall(object sender, OutgoingCallDataEventArgs args)
         {
-            if ((_state & PortState.Free) != 0)
+            if ((State & PortState.Free) != 0)
             {
-                args.SourceNumber = _number;
-                args.AbonentId = _abonentId;
-                var isConnect = InvokeStartCall(this, args);
-                if (isConnect)
+                var callId = InvokeStartCall(this, args);
+                if (callId != null)
                 {
+                    _currentCallId = callId;
                     _state = PortState.Connect | PortState.Busy;
                 }
             }
@@ -75,13 +57,13 @@ namespace ATS_BillingSystem.App.ATS
             }
         }
 
-        public void PortStopCall(object sender, CallDataEventArgs args)
+        public void PortStopCall(object sender, OutgoingCallDataEventArgs args)
         {
-            if ((_state & PortState.Busy) != 0)
+            if ((State & PortState.Busy) != 0)
             {
                 _state = PortState.Connect | PortState.Free;
-                args.SourceNumber = _number;
-                args.AbonentId = _abonentId;
+                args.CallId = _currentCallId;
+                _currentCallId = null;
                 InvokePortStopCall(this, args);
             }
             else
@@ -90,42 +72,37 @@ namespace ATS_BillingSystem.App.ATS
             }
         }
 
-        public void PortStartIncomingCall(IPhoneNumber sourceNumber)
+        public void PortStartIncomingCall(object sender, IncomingCallDataEventArgs args)
         {
-            if ((_state & PortState.Free) != 0)
-            {
-                _state = PortState.Connect | PortState.Busy;
-                var args = new CallDataEventArgs() { SourceNumber = sourceNumber };
-                InvokePortStartIncomingCall(this, args);
-            }
+            _state = PortState.Connect | PortState.Busy;
+            _currentCallId = args.CallId;
+            InvokePortStartIncomingCall(this, args);
         }
 
-        public void PortStopIncomingCall(IPhoneNumber sourceNumber)
+        public void PortAcceptIncomingCall(object sender, IncomingCallDataEventArgs args) => 
+            SendSystemMessage(string.Format(InfoText.CommunacationBegin, args.SourceNumber.Number));
+        
+        public void PortStopIncomingCall(object sender, IncomingCallDataEventArgs args)
         {
-            if ((_state & PortState.Busy) != 0)
+            if ((State & PortState.Busy) != 0)
             {
                 _state = PortState.Connect | PortState.Free;
-                var args = new CallDataEventArgs() { SourceNumber = sourceNumber };
+                args.CallId = _currentCallId;
+                _currentCallId = null;
                 InvokePortStopIncomingCall(this, args);
             }
         }
 
-        private void InvokePortStateChanged(object sender, PortStateEventArgs args) => 
-            OnPortStateChange?.Invoke(this, args);        
+        private IIdentifier InvokeStartCall(object sender, OutgoingCallDataEventArgs args) => 
+            OnPortStartCall?.Invoke(this, args);        
 
-        private bool InvokeStartCall(object sender, CallDataEventArgs args)
-        {
-            var isConnect = OnPortStartCall?.Invoke(this, args);
-            return isConnect.Value;
-        }
+        private void InvokePortStopCall(object sender, OutgoingCallDataEventArgs args) =>
+            OnPortStopCall?.Invoke(sender, args);
 
-        private void InvokePortStopCall(object sender, CallDataEventArgs args) => 
-            OnPortStopCall?.Invoke(sender, args);        
+        private void InvokePortStartIncomingCall(object sender, IncomingCallDataEventArgs args) =>
+            OnPortStartIncomingCall?.Invoke(sender, args);
 
-        private void InvokePortStartIncomingCall(object sender, CallDataEventArgs args) => 
-            OnPortStartIncomingCall?.Invoke(sender, args);        
-
-        private void InvokePortStopIncomingCall(object sender, CallDataEventArgs args) => 
-            OnPortStopIncomingCall?.Invoke(sender, args);        
+        private void InvokePortStopIncomingCall(object sender, IncomingCallDataEventArgs args) =>
+            OnPortStopIncomingCall?.Invoke(sender, args);
     }
 }

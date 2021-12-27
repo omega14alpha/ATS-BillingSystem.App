@@ -1,18 +1,19 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
+﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.EventsArgs;
 using System;
 
 namespace ATS_BillingSystem.App.ATS.Interfaces
 {
     internal interface IStation : IMessager
     {
-        event EventHandler<HistoryEventArgs> OnRecordingCallStartData;
+        event EventHandler<OutgoingCallDataEventArgs> OnRecordingCallStartData;
 
-        event EventHandler<HistoryEventArgs> OnRecordingCallEndData;
+        event EventHandler<OutgoingCallDataEventArgs> OnRecordingCallEndData;
 
-        bool ReceiveIncomingCallFromPort(object sender, CallDataEventArgs args);
+        event EventHandler<IncomingCallDataEventArgs> OnIncomingCallEnd;
 
-        void ReceiveEndCurrentCallFromPort(object sender, CallDataEventArgs args);
+        IIdentifier ReceiveIncomingCallFromPort(object sender, OutgoingCallDataEventArgs args);
 
-        void PortStateChanged(object sender, PortStateEventArgs args);
+        void ReceiveEndCurrentCallFromPort(object sender, OutgoingCallDataEventArgs args);
     }
 }

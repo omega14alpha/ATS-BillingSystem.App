@@ -1,4 +1,5 @@
 ﻿using ATS_BillingSystem.App.ATS.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Interfaces;
 using ATS_BillingSystem.App.Infrastructure.Constants;
 using System;
 using System.Collections.Generic;
@@ -7,33 +8,36 @@ namespace ATS_BillingSystem.App.ATS
 {
     internal class PortController : IPortController
     {
-        private ICollection<IPort> _ports;
-
-        public IEnumerable<IPort> Ports => _ports;
+        private Dictionary<IPhoneNumber, IPort> _ports;
 
         public PortController()
         {
-            _ports = new List<IPort>();
+            _ports = new Dictionary<IPhoneNumber, IPort>();
         }
-
-        public void AddNewPort(IPort port)
+                
+        public void AddNewPort(IPhoneNumber number, IPort port)
         {
+            if (number is null)
+            {
+                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(number)));
+            }
+
             if (port is null)
             {
                 throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(port)));
             }
 
-            _ports.Add(port);
+            _ports.Add(number, port);
         }
 
-        public void RemovePort(IPort port)
+        public IPort GetPort(IPhoneNumber number)
         {
-            if (port is null)
+            if (_ports.TryGetValue(number, out IPort port))
             {
-                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(port)));
+                return port;
             }
 
-            _ports.Remove(port);
+            return null;
         }
     }
 }

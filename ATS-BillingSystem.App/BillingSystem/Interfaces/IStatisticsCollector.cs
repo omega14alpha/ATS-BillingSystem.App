@@ -1,19 +1,15 @@
-﻿using ATS_BillingSystem.App.EventsArgs;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace ATS_BillingSystem.App.BillingSystem.Interfaces
 {
     internal interface IStatisticsCollector
     {
-        void AddNewAbonentToCollection(IAbonenId abonentId);
+        IEnumerable<IAbonentsHistory> this[IIdentifier id] { get; }
 
-        void AddTestAbonentData(IAbonenId abonentId, ICollection<IAbonentsHistory> abonentHistory);
+        void AddNewAbonentToCollection(IIdentifier abonentId);
 
-        void SaveNewCallStartData(object sender, HistoryEventArgs args);
+        void AddTestAbonentData(IIdentifier abonentId, ICollection<IAbonentsHistory> abonentHistory);
 
-        void SaveNewCallEndData(object sender, HistoryEventArgs args);
-
-        IEnumerable<IAbonentsHistory> GetAbonentStatistic(IAbonenId abonentId, Func<IAbonentsHistory, bool> func);
+        void SaveNewCallData(IIdentifier abonentId, IAbonentsHistory history);
     }
 }

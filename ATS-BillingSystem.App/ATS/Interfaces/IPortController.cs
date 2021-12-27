@@ -1,13 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using ATS_BillingSystem.App.BillingSystem.Interfaces;
 
 namespace ATS_BillingSystem.App.ATS.Interfaces
 {
     internal interface IPortController
     {
-        IEnumerable<IPort> Ports { get; }
+        void AddNewPort(IPhoneNumber number, IPort port);
 
-        void AddNewPort(IPort port);
-
-        void RemovePort(IPort port);
+        IPort GetPort(IPhoneNumber number);
     }
 }

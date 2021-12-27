@@ -1,113 +1,93 @@
 ﻿using ATS_BillingSystem.App.ATS.Interfaces;
 using ATS_BillingSystem.App.ATS.Models;
 using ATS_BillingSystem.App.BillingSystem.Interfaces;
+using ATS_BillingSystem.App.BillingSystem.Models;
 using ATS_BillingSystem.App.EventsArgs;
+using ATS_BillingSystem.App.Infrastructure;
 using ATS_BillingSystem.App.Infrastructure.Constants;
 using System;
-using System.Linq;
 
 namespace ATS_BillingSystem.App.ATS
 {
     internal class Station : Communicator, IStation
     {
-        private IPortController _port;
+        private IPortController _portController;
 
-        public event EventHandler<HistoryEventArgs> OnRecordingCallStartData;
+        public event EventHandler<OutgoingCallDataEventArgs> OnRecordingCallStartData;
 
-        public event EventHandler<HistoryEventArgs> OnRecordingCallEndData;
+        public event EventHandler<OutgoingCallDataEventArgs> OnRecordingCallEndData;
 
-        public Station(IPortController ports)
+        public event EventHandler<IncomingCallDataEventArgs> OnIncomingCallEnd;
+
+        public Station(IPortController portController)
         {
-            _port = ports;
+            _portController = portController;
         }
 
-        public bool ReceiveIncomingCallFromPort(object sender, CallDataEventArgs args)
+        public IIdentifier ReceiveIncomingCallFromPort(object sender, OutgoingCallDataEventArgs args)
         {
-            IPort targetPort = _port.Ports.Where(x => x.Number == args.CalledNumber).FirstOrDefault();
+            var targetPort = _portController.GetPort(args.CalledNumber);
             if (targetPort != null)
             {
-                string message = string.Empty;
                 if ((targetPort.State & PortState.Busy) != 0)
                 {
-                    message = InfoText.TargetPhoneBusy;
+                    SendSystemMessage(InfoText.TargetPhoneBusy);
                 }
                 else if (targetPort.State == PortState.Disconnect)
                 {
-                    message = InfoText.TargetPhoneDisconected;
+                    SendSystemMessage(InfoText.TargetPhoneDisconected);
                 }
                 else
                 {
-                    targetPort.PortStartIncomingCall(args.SourceNumber);
-                    RecordingCallStartData(args.AbonentId, args.CalledNumber);
-                    return true;
-                }
+                    IIdentifier callId = new CallId() { Id = IdGenerator.GetId() };
+                    args.CallId = callId;
+                    InvokeRecordingCallStartData(sender, args);
 
-                SendSystemMessage(message);
+                    var newArgs = new IncomingCallDataEventArgs()
+                    {
+                        SourceNumber = args.AbonentData.PhoneNumber,
+                        CallId = callId
+                    };
+
+                    targetPort.PortStartIncomingCall(this, newArgs);
+                    return callId;
+                }
             }
 
-            return false;
+            return null;
         }
 
-        public void ReceiveEndCurrentCallFromPort(object sender, CallDataEventArgs args)
+        public void ReceiveEndCurrentCallFromPort(object sender, OutgoingCallDataEventArgs args)
         {
-            IPort targetPort = _port.Ports.FirstOrDefault(x => x.Number == args.CalledNumber);
-            if (targetPort != null)
+            var port = _portController.GetPort(args.CalledNumber);
+            if (port != null)
             {
-                if ((targetPort.State & PortState.Busy) != 0)
+                if ((port.State & PortState.Busy) != 0)
                 {
-                    targetPort.PortStopIncomingCall(args.SourceNumber);
-                    RecordingCallEndData(args.AbonentId);
+                    IncomingCallEnd(args.CallId, args.AbonentData.PhoneNumber);
+                    InvokeOnRecordingCallEndData(sender, args);
                 }
             }
         }
 
-        public void PortStateChanged(object sender, PortStateEventArgs args)
+        private void IncomingCallEnd(IIdentifier callId, IPhoneNumber sourceNumber)
         {
-            // Не решил какая должна быть реакция!!!
-        }
-
-        private void RecordingCallStartData(IAbonenId abonentId, IPhoneNumber calledNumber)
-        {
-            if (abonentId == null)
+            IncomingCallDataEventArgs args = new IncomingCallDataEventArgs()
             {
-                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(abonentId)));
-            }
-
-            if (calledNumber == null)
-            {
-                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(calledNumber)));
-            }
-
-            var args = new HistoryEventArgs()
-            {
-                AbonentId = abonentId,
-                CalledNumber = calledNumber,
-                DateTime = DateTime.Now
+                SourceNumber = sourceNumber,
+                CallId = callId
             };
 
-            InvokeRecordingCallStartData(this, args);
+            InvokeOnIncomingCallEnd(this, args);
         }
 
-        private void RecordingCallEndData(IAbonenId abonentId)
-        {
-            if (abonentId == null)
-            {
-                throw new ArgumentNullException(string.Format(ExceptionText.CannotBeNull, nameof(abonentId)));
-            }
-
-            var args = new HistoryEventArgs()
-            {
-                AbonentId = abonentId,
-                DateTime = DateTime.Now
-            };
-
-            InvokeOnRecordingCallEndData(this, args);
-        }
-
-        private void InvokeRecordingCallStartData(object sender, HistoryEventArgs args) => 
+        private void InvokeRecordingCallStartData(object sender, OutgoingCallDataEventArgs args) => 
             OnRecordingCallStartData?.Invoke(sender, args);
         
-        private void InvokeOnRecordingCallEndData(object sender, HistoryEventArgs args) => 
-            OnRecordingCallEndData?.Invoke(sender, args);        
+        private void InvokeOnRecordingCallEndData(object sender, OutgoingCallDataEventArgs args) => 
+            OnRecordingCallEndData?.Invoke(sender, args);   
+        
+        private void InvokeOnIncomingCallEnd(object sender, IncomingCallDataEventArgs args) =>
+            OnIncomingCallEnd?.Invoke(sender, args);        
     }
 }
