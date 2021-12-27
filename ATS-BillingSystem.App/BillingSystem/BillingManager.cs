@@ -24,7 +24,7 @@ namespace ATS_BillingSystem.App.BillingSystem
 
         public void SaveNewCallStartData(object sender, OutgoingCallDataEventArgs args)
         {
-            string tariffName = _tariffController.Tariffs.FirstOrDefault(s => s.PlanId == args.AbonentData.TariffId).TarrifName;
+            string tariffName = _tariffController.Tariffs?.FirstOrDefault(s => s.PlanId == args.AbonentData.TariffId).TarrifName;
             IAbonentsHistory history = new AbonentsHistory()
             {
                 CallId = args.CallId,
@@ -38,8 +38,8 @@ namespace ATS_BillingSystem.App.BillingSystem
 
         public void SaveNewCallEndData(object sender, OutgoingCallDataEventArgs args)
         {
-            var history = _currentCalls.FirstOrDefault(s => s.CallId == args.CallId);
-            double price = _tariffController.Tariffs.FirstOrDefault(s => s.PlanId == args.AbonentData.TariffId).PriceOfOneMinute;
+            var history = _currentCalls?.FirstOrDefault(s => s.CallId == args.CallId);
+            double price = _tariffController.Tariffs?.FirstOrDefault(s => s.PlanId == args.AbonentData.TariffId).PriceOfOneMinute ?? 0;
             history.EndCallDateTime = DateTime.Now;
             history.TalkTime = (history.EndCallDateTime - history.BeginCallDateTime).TotalMinutes;
             history.Cost = history.TalkTime * price;

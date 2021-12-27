@@ -118,7 +118,7 @@ namespace ATS_BillingSystem.App.Infrastructure
         public void FillTestDataToStatisticHandler()
         {
             ICollection<IAbonentsHistory> testCollection = new List<IAbonentsHistory>();
-            var price = _tariffController.Tariffs.FirstOrDefault().PriceOfOneMinute;
+            double price = _tariffController.Tariffs?.FirstOrDefault().PriceOfOneMinute ?? 0;
 
             for (int month = 1; month < 13; month++)
             {
